@@ -15,7 +15,7 @@ make docs-preview # Preview built site at http://localhost:4173
 ### Getting Started
 
 - [Installation](/installation) — Requirements, Linux/macOS/Windows install, mpv plugin setup
-- [Usage](/usage) — `subminer` wrapper + subcommands (`jellyfin`, `yt`, `doctor`, `config`, `mpv`, `texthooker`, `app`), mpv plugin, keybindings
+- [Usage](/usage) — `subminer` wrapper + subcommands (`jellyfin`, `yt`, `doctor`, `config`, `mpv`, `dictionary`, `texthooker`, `app`), mpv plugin, keybindings
 - [Mining Workflow](/mining-workflow) — End-to-end sentence mining guide, single overlay + modals, card creation
 
 ### Reference

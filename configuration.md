@@ -796,17 +796,36 @@ AniList integration is opt-in and disabled by default. Enable it to allow SubMin
 {
   "anilist": {
     "enabled": true,
-    "accessToken": ""
+    "accessToken": "",
+    "characterDictionary": {
+      "enabled": false,
+      "refreshTtlHours": 168,
+      "maxLoaded": 3,
+      "evictionPolicy": "delete",
+      "profileScope": "all"
+    }
   }
 }
 ```
 
-| Option        | Values          | Description                                                             |
-| ------------- | --------------- | ----------------------------------------------------------------------- |
-| `enabled`     | `true`, `false` | Enable AniList post-watch progress updates (default: `false`)           |
-| `accessToken` | string          | Optional explicit AniList access token override (default: empty string) |
+| Option                                     | Values                     | Description                                                                                      |
+| ------------------------------------------ | -------------------------- | ------------------------------------------------------------------------------------------------ |
+| `enabled`                                  | `true`, `false`            | Enable AniList post-watch progress updates (default: `false`)                                   |
+| `accessToken`                              | string                     | Optional explicit AniList access token override (default: empty string)                         |
+| `characterDictionary.enabled`              | `true`, `false`            | Enable automatic import/update of character dictionaries for the currently watched AniList media |
+| `characterDictionary.refreshTtlHours`      | number                     | Refresh TTL in hours for current media dictionary generation (default: `168`)                   |
+| `characterDictionary.maxLoaded`            | number                     | Maximum loaded character dictionaries kept in rotation (default: `3`)                           |
+| `characterDictionary.evictionPolicy`       | `"delete"`, `"disable"`    | On overflow, either remove dictionary from DB (`delete`) or only disable in settings (`disable`) |
+| `characterDictionary.profileScope`         | `"all"`, `"active"`        | Apply dictionary settings updates to all Yomitan profiles or only active profile                |
 
 When `enabled` is `true` and `accessToken` is empty, SubMiner opens an AniList setup helper window. Keep `enabled` as `false` to disable all AniList setup/update behavior.
+
+Character dictionary sync behavior:
+
+- Dictionary identity is AniList **media ID** (season-level when AniList has separate media IDs).
+- No series/franchise merge across seasons.
+- No proactive download of unseen seasons.
+- Sync/import runs only for the currently watched media when media path/title changes.
 
 Current post-watch behavior:
 

@@ -263,6 +263,13 @@
   "anilist": {
     "enabled": false, // Enable AniList post-watch progress updates. Values: true | false
     "accessToken": "", // Optional explicit AniList access token override; leave empty to use locally stored token from setup.
+    "characterDictionary": {
+      "enabled": false, // Enable automatic Yomitan character dictionary sync for currently watched AniList media. Values: true | false
+      "refreshTtlHours": 168, // TTL in hours before refreshing the currently watched media dictionary.
+      "maxLoaded": 3, // Maximum number of auto-synced AniList dictionaries kept loaded at once.
+      "evictionPolicy": "delete", // Eviction behavior when maxLoaded is exceeded. Values: disable | delete
+      "profileScope": "all", // Yomitan profile scope for dictionary enable/disable updates. Values: all | active
+    }, // Per-media AniList character dictionary auto sync settings (no season merge).
   }, // Anilist API credentials and update behavior.
 
   // ==========================================

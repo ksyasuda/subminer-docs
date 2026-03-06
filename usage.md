@@ -63,6 +63,7 @@ subminer config show              # Print active config contents
 subminer mpv socket               # Print active mpv socket path
 subminer mpv status               # Exit 0 if socket is ready, else exit 1
 subminer mpv idle                 # Launch detached idle mpv with SubMiner defaults
+subminer dictionary /path/to/file-or-directory  # Generate character dictionary ZIP from target (manual Yomitan import)
 subminer texthooker               # Launch texthooker-only mode
 subminer app --anilist            # Pass args directly to SubMiner binary (example: AniList login flow)
 subminer yt -o ~/subs https://youtu.be/...  # YouTube subcommand: output directory shortcut
@@ -87,6 +88,7 @@ SubMiner.AppImage --jellyfin-libraries
 SubMiner.AppImage --jellyfin-items --jellyfin-library-id LIBRARY_ID --jellyfin-search anime --jellyfin-limit 20
 SubMiner.AppImage --jellyfin-play --jellyfin-item-id ITEM_ID --jellyfin-audio-stream-index 1 --jellyfin-subtitle-stream-index 2  # Requires connected mpv IPC (--start or plugin workflow)
 SubMiner.AppImage --jellyfin-remote-announce  # Force cast-target capability announce + visibility check
+SubMiner.AppImage --dictionary             # Generate character dictionary ZIP for current anime
 SubMiner.AppImage --help                  # Show all options
 ```
 
@@ -109,9 +111,16 @@ SubMiner.AppImage --help                  # Show all options
 - `subminer doctor`: health checks for core dependencies and runtime paths.
 - `subminer config`: config helpers (`path`, `show`).
 - `subminer mpv`: mpv helpers (`status`, `socket`, `idle`).
+- `subminer dictionary <path>`: generates a Yomitan-importable character dictionary ZIP from a file/directory target.
 - `subminer texthooker`: texthooker-only shortcut (same behavior as `--texthooker`).
 - `subminer app` / `subminer bin`: direct passthrough to the SubMiner binary/AppImage.
 - Subcommand help pages are available (for example `subminer jellyfin -h`, `subminer yt -h`).
+
+AniList character dictionary auto-sync (optional):
+
+- Enable with `anilist.characterDictionary.enabled=true` in config.
+- Sync is per AniList media ID (no season merge); only currently watched media is synced.
+- Rotation limit defaults to 3 loaded dictionaries (`maxLoaded`).
 
 Use subcommands for Jellyfin/YouTube command families (`subminer jellyfin ...`, `subminer yt ...`).
 Top-level launcher flags like `--jellyfin-*` and `--yt-subgen-*` are intentionally rejected.

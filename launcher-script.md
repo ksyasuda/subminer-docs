@@ -72,6 +72,7 @@ subminer ytsearch:"jp news"     # YouTube search
 | `subminer mpv status`      | Check mpv socket readiness                                 |
 | `subminer mpv socket`      | Print active socket path                                   |
 | `subminer mpv idle`        | Launch detached idle mpv instance                          |
+| `subminer dictionary <path>` | Generate character dictionary ZIP from file/dir target   |
 | `subminer texthooker`      | Launch texthooker-only mode                                |
 | `subminer app`             | Pass arguments directly to SubMiner binary                 |
 
