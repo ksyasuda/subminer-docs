@@ -777,12 +777,12 @@ Sync the active subtitle track using `alass` (preferred) or `ffsubsync`:
 }
 ```
 
-| Option           | Values               | Description                                                                                                 |
-| ---------------- | -------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `defaultMode`    | `"auto"`, `"manual"` | `auto`: try `alass` against secondary subtitle, then fallback to `ffsubsync`; `manual`: open overlay picker |
-| `alass_path`     | string path          | Path to `alass` executable. Empty or `null` falls back to `/usr/bin/alass`.                                 |
-| `ffsubsync_path` | string path          | Path to `ffsubsync` executable. Empty or `null` falls back to `/usr/bin/ffsubsync`.                         |
-| `ffmpeg_path`    | string path          | Path to `ffmpeg` (used for internal subtitle extraction). Empty or `null` falls back to `/usr/bin/ffmpeg`.  |
+| Option           | Values               | Description                                                                                                               |
+| ---------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `defaultMode`    | `"auto"`, `"manual"` | `auto`: try `alass` against secondary subtitle, then fallback to `ffsubsync`; `manual`: open overlay picker               |
+| `alass_path`     | string path          | Path to `alass` executable. Empty or `null` falls back to `/usr/bin/alass`.                                               |
+| `ffsubsync_path` | string path          | Path to `ffsubsync` executable. Empty or `null` falls back to `/usr/bin/ffsubsync`.                                       |
+| `ffmpeg_path`    | string path          | Path to `ffmpeg` (used for internal subtitle extraction). Empty or `null` falls back to `/usr/bin/ffmpeg`.                |
 | `replace`        | `true`, `false`      | When `true` (default), overwrite the active subtitle file on successful sync. When `false`, write `<name>_retimed.<ext>`. |
 
 Default trigger is `Ctrl+Alt+S` via `shortcuts.triggerSubsync`.
@@ -808,15 +808,15 @@ AniList integration is opt-in and disabled by default. Enable it to allow SubMin
 }
 ```
 
-| Option                                     | Values                     | Description                                                                                      |
-| ------------------------------------------ | -------------------------- | ------------------------------------------------------------------------------------------------ |
-| `enabled`                                  | `true`, `false`            | Enable AniList post-watch progress updates (default: `false`)                                   |
-| `accessToken`                              | string                     | Optional explicit AniList access token override (default: empty string)                         |
-| `characterDictionary.enabled`              | `true`, `false`            | Enable automatic import/update of character dictionaries for the currently watched AniList media |
-| `characterDictionary.refreshTtlHours`      | number                     | Refresh TTL in hours for current media dictionary generation (default: `168`)                   |
-| `characterDictionary.maxLoaded`            | number                     | Maximum loaded character dictionaries kept in rotation (default: `3`)                           |
-| `characterDictionary.evictionPolicy`       | `"delete"`, `"disable"`    | On overflow, either remove dictionary from DB (`delete`) or only disable in settings (`disable`) |
-| `characterDictionary.profileScope`         | `"all"`, `"active"`        | Apply dictionary settings updates to all Yomitan profiles or only active profile                |
+| Option                                | Values                  | Description                                                                                      |
+| ------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------ |
+| `enabled`                             | `true`, `false`         | Enable AniList post-watch progress updates (default: `false`)                                    |
+| `accessToken`                         | string                  | Optional explicit AniList access token override (default: empty string)                          |
+| `characterDictionary.enabled`         | `true`, `false`         | Enable automatic import/update of character dictionaries for the currently watched AniList media |
+| `characterDictionary.refreshTtlHours` | number                  | Refresh TTL in hours for current media dictionary generation (default: `168`)                    |
+| `characterDictionary.maxLoaded`       | number                  | Maximum loaded character dictionaries kept in rotation (default: `3`)                            |
+| `characterDictionary.evictionPolicy`  | `"delete"`, `"disable"` | On overflow, either remove dictionary from DB (`delete`) or only disable in settings (`disable`) |
+| `characterDictionary.profileScope`    | `"all"`, `"active"`     | Apply dictionary settings updates to all Yomitan profiles or only active profile                 |
 
 When `enabled` is `true` and `accessToken` is empty, SubMiner opens an AniList setup helper window. Keep `enabled` as `false` to disable all AniList setup/update behavior.
 
@@ -1002,7 +1002,7 @@ When `dbPath` is blank or omitted, SubMiner writes telemetry and session summari
 
 Set `dbPath` only if you want to relocate the database (for backup, syncing, or inspection workflows). The database is created when tracking starts for the first time.
 
-See [Immersion Tracking Storage](/immersion-tracking) for schema details, query templates, retention/rollup behavior, and backend portability notes.
+See [Immersion Tracking Storage](/immersion-tracking) for schema details, query templates, retention/rollup behavior, backend portability notes, and the dedicated SQLite verification command.
 
 ### YouTube Subtitle Generation
 

@@ -92,6 +92,8 @@ bun run test:launcher     # Launcher regression tests (config discovery + comman
 bun run test:launcher:smoke:src # Launcher e2e smoke: launcher -> mpv IPC -> overlay start/stop wiring
 bun run test:core         # Source-level core regression tests (default lane)
 bun run test:fast         # Source-level config + core lane (no build prerequisite)
+bun run test:immersion:sqlite:src # Source lane; warns/skips if node:sqlite is unavailable in Bun
+bun run test:immersion:sqlite # Build + Node-backed SQLite persistence/finalization lane
 ```
 
 Dist-level tests are now an explicit smoke lane used to validate compiled/runtime assumptions.
@@ -102,10 +104,13 @@ Smoke and optional deep dist commands:
 
 ```bash
 bun run build                 # compile dist artifacts
+bun run test:immersion:sqlite # compile + run SQLite-backed immersion tests with Node --experimental-sqlite
 bun run test:smoke:dist       # explicit smoke scope for compiled runtime
 bun run test:config:dist      # optional full dist config suite
 bun run test:core:dist        # optional full dist core suite
 ```
+
+Use `bun run test:immersion:sqlite` when you need real DB-backed coverage for the immersion tracker. The Bun source lane may skip those tests when `node:sqlite` is unavailable, but the dedicated Node-backed lane is what CI/release now uses for reproducible persistence verification.
 
 `bun run test:subtitle` and `bun run test:subtitle:dist` are currently placeholders and do not run an active suite.
 
