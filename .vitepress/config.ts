@@ -105,6 +105,6 @@ export default {
     externalLinkIcon: true,
     docFooter: { prev: 'Previous', next: 'Next' },
     returnToTopLabel: 'Back to top',
-    socialLinks: [{ icon: 'github', link: 'https://github.com/ksyasuda/subminer-docs' }],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/ksyasuda/SubMiner' }],
   },
 };
