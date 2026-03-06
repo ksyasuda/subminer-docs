@@ -2,7 +2,9 @@ import DefaultTheme from 'vitepress/theme';
 import { useRoute } from 'vitepress';
 import { nextTick, onMounted, watch } from 'vue';
 import '@catppuccin/vitepress/theme/macchiato/mauve.css';
+import './tui-theme.css';
 import './mermaid-modal.css';
+import TuiLayout from './TuiLayout.vue';
 
 let mermaidLoader: Promise<any> | null = null;
 let plausibleTrackerInitialized = false;
@@ -195,7 +197,8 @@ async function renderMermaidBlocks() {
 }
 
 export default {
-  ...DefaultTheme,
+  Layout: TuiLayout,
+  extends: DefaultTheme,
   setup() {
     const route = useRoute();
     const render = () => {

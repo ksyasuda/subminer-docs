@@ -1,11 +1,7 @@
-const repositoryName = process.env.GITHUB_REPOSITORY?.split('/')[1];
-const base = process.env.GITHUB_ACTIONS && repositoryName ? `/${repositoryName}/` : '/';
-
 export default {
   title: 'SubMiner Docs',
   description:
     'SubMiner: an MPV immersion-mining overlay with Yomitan and AnkiConnect integration.',
-  base,
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico', sizes: 'any' }],
     [
@@ -102,13 +98,13 @@ export default {
       copyright: 'Copyright © 2026-present sudacode',
     },
     editLink: {
-      pattern: 'https://github.com/ksyasuda/SubMiner/edit/main/docs/:path',
+      pattern: 'https://github.com/ksyasuda/subminer-docs/edit/main/:path',
       text: 'Edit this page on GitHub',
     },
     outline: { level: [2, 3], label: 'On this page' },
     externalLinkIcon: true,
     docFooter: { prev: 'Previous', next: 'Next' },
     returnToTopLabel: 'Back to top',
-    socialLinks: [{ icon: 'github', link: 'https://github.com/ksyasuda/SubMiner' }],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/ksyasuda/subminer-docs' }],
   },
 };

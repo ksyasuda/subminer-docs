@@ -1,0 +1,368 @@
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+@import '@fontsource/jetbrains-mono/600.css';
+@import '@fontsource/jetbrains-mono/700.css';
+@import '@fontsource/manrope/400.css';
+@import '@fontsource/manrope/500.css';
+@import '@fontsource/manrope/600.css';
+@import '@fontsource/manrope/700.css';
+@import '@fontsource/manrope/800.css';
+
+:root {
+  --tui-font-mono: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+  --tui-font-body: 'Manrope', system-ui, sans-serif;
+}
+
+:root {
+  --vp-font-family-base: var(--tui-font-body);
+  --vp-font-family-mono: var(--tui-font-mono);
+}
+
+/* === Nav bar === */
+.VPNav .VPNavBarTitle .title {
+  font-family: var(--tui-font-mono);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+}
+
+.VPNav .VPNavBarMenuLink {
+  font-family: var(--tui-font-mono);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+
+.VPNav .VPNavBar {
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+/* === Sidebar === */
+.VPSidebar .VPSidebarItem .text {
+  font-family: var(--tui-font-mono);
+  font-size: 13px;
+}
+
+.VPSidebar .VPSidebarItem.is-active.is-link > .item .text::before {
+  content: '❯ ';
+  color: var(--vp-c-brand-1);
+}
+
+.VPSidebar .VPSidebarItem.is-link:not(.is-active) > .item .text::before {
+  content: '· ';
+  opacity: 0.4;
+}
+
+.VPSidebar .VPSidebarItem.level-0 > .item .text {
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.VPSidebar .VPSidebarItem.level-0 > .item .text::before {
+  content: '# ';
+  color: var(--vp-c-text-3);
+}
+
+.VPSidebar .VPSidebarItem.level-0 .items {
+  border-left: 1px solid var(--vp-c-divider);
+  margin-left: 6px;
+  padding-left: 12px;
+}
+
+/* === Headings === */
+.vp-doc h1,
+.vp-doc h2,
+.vp-doc h3,
+.vp-doc h4 {
+  font-family: var(--tui-font-mono);
+}
+
+.vp-doc h1 {
+  letter-spacing: -0.02em;
+}
+
+.vp-doc h1::before {
+  content: '❯ ';
+  color: var(--vp-c-brand-1);
+  font-weight: 400;
+}
+
+.vp-doc h2 {
+  border-bottom: none;
+  padding-bottom: 4px;
+}
+
+.vp-doc h2::after {
+  content: '';
+  display: block;
+  margin-top: 6px;
+  height: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--vp-c-divider) 0,
+    var(--vp-c-divider) 1ch,
+    transparent 1ch,
+    transparent 1.5ch
+  );
+}
+
+/* === Custom containers === */
+.vp-doc .custom-block {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 0;
+  padding: 16px 20px;
+  margin: 16px 0;
+  position: relative;
+  background: var(--vp-c-bg-soft);
+}
+
+.vp-doc .custom-block::before {
+  font-family: var(--tui-font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  position: absolute;
+  top: -1px;
+  left: 12px;
+  transform: translateY(-50%);
+  padding: 0 6px;
+  background: var(--vp-c-bg);
+}
+
+.vp-doc .custom-block.tip,
+.vp-doc .custom-block.info,
+.vp-doc .custom-block.warning,
+.vp-doc .custom-block.danger,
+.vp-doc .custom-block.details {
+  border-left-width: 1px;
+}
+
+.vp-doc .custom-block.tip { border-color: var(--vp-c-brand-1); }
+.vp-doc .custom-block.tip::before { content: '── tip'; color: var(--vp-c-brand-1); }
+
+.vp-doc .custom-block.info { border-color: var(--vp-c-brand-2); }
+.vp-doc .custom-block.info::before { content: '── info'; color: var(--vp-c-brand-2); }
+
+.vp-doc .custom-block.warning { border-color: var(--vp-c-warning-1); }
+.vp-doc .custom-block.warning::before { content: '── warning'; color: var(--vp-c-warning-1); }
+
+.vp-doc .custom-block.danger { border-color: var(--vp-c-danger-1); }
+.vp-doc .custom-block.danger::before { content: '── danger'; color: var(--vp-c-danger-1); }
+
+.vp-doc .custom-block.details { border-color: var(--vp-c-divider); }
+.vp-doc .custom-block.details::before { content: '── details'; color: var(--vp-c-text-2); }
+
+.vp-doc .custom-block .custom-block-title {
+  font-family: var(--tui-font-mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* === Blinking cursor === */
+.tui-cursor {
+  display: inline-block;
+  color: var(--vp-c-brand-1);
+  animation: tui-blink 1s step-end infinite;
+  font-family: var(--tui-font-mono);
+  font-size: 0.9em;
+  vertical-align: baseline;
+  margin-left: 2px;
+  line-height: 1;
+}
+
+@keyframes tui-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+
+/* === Statusline === */
+.tui-statusline {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  font-family: var(--tui-font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--vp-c-bg-soft);
+  border-top: 1px solid var(--vp-c-divider);
+  color: var(--vp-c-text-2);
+  user-select: none;
+}
+
+.tui-statusline__left,
+.tui-statusline__right {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.tui-statusline__mode {
+  padding: 0 10px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--vp-c-bg);
+  background: var(--vp-c-brand-1);
+  line-height: 28px;
+  margin-left: -12px;
+}
+
+.tui-statusline__mode[data-mode="HOME"] {
+  background: var(--vp-c-brand-2);
+}
+
+.tui-statusline__sep {
+  display: inline-block;
+  margin: 0 2px;
+  color: var(--vp-c-divider);
+}
+
+.tui-statusline__sep::after {
+  content: '│';
+}
+
+.tui-statusline__file {
+  padding: 0 8px;
+  color: var(--vp-c-text-1);
+}
+
+.tui-statusline__section {
+  padding: 0 8px;
+  color: var(--vp-c-text-2);
+}
+
+.tui-statusline__date {
+  padding: 0 8px;
+  color: var(--vp-c-text-3);
+}
+
+.tui-statusline__branch {
+  padding: 0 10px;
+  font-weight: 600;
+  color: var(--vp-c-bg);
+  background: var(--vp-c-brand-3, var(--vp-c-brand-1));
+  line-height: 28px;
+  margin-right: -12px;
+}
+
+body {
+  padding-bottom: 28px;
+}
+
+@media (max-width: 640px) {
+  .tui-statusline__section,
+  .tui-statusline__date {
+    display: none;
+  }
+}
+
+/* === Hero === */
+.VPHero .name {
+  font-family: var(--tui-font-mono) !important;
+}
+
+.VPHero .text {
+  font-family: var(--tui-font-mono) !important;
+  font-size: 2rem !important;
+}
+
+.VPHero .tagline {
+  font-family: var(--tui-font-body);
+}
+
+.VPHero .actions .action .VPButton {
+  font-family: var(--tui-font-mono);
+  font-size: 13px;
+  border-radius: 0;
+  text-transform: lowercase;
+}
+
+.VPHero .actions .action .VPButton::before {
+  content: '[';
+  opacity: 0.5;
+  margin-right: 2px;
+}
+
+.VPHero .actions .action .VPButton::after {
+  content: ']';
+  opacity: 0.5;
+  margin-left: 2px;
+}
+
+/* === Features === */
+.VPFeatures .VPFeature {
+  border-radius: 0 !important;
+  border: 1px solid var(--vp-c-divider) !important;
+}
+
+.VPFeatures .VPFeature .title {
+  font-family: var(--tui-font-mono);
+  font-size: 14px;
+}
+
+.VPFeatures .VPFeature .details {
+  font-family: var(--tui-font-body);
+}
+
+/* === Outline === */
+.VPDocAsideOutline .outline-title {
+  font-family: var(--tui-font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.VPDocAsideOutline .outline-link {
+  font-family: var(--tui-font-mono);
+  font-size: 12px;
+}
+
+.VPDocAsideOutline .outline-link.active {
+  color: var(--vp-c-brand-1);
+}
+
+.VPDocAsideOutline .outline-link.active::before {
+  content: '❯ ';
+}
+
+/* === Doc footer === */
+.VPDocFooter .edit-link-button,
+.VPDocFooter .last-updated-text {
+  font-family: var(--tui-font-mono);
+  font-size: 12px;
+}
+
+.VPDocFooter .pager-link .title {
+  font-family: var(--tui-font-mono);
+}
+
+.VPDocFooter .pager-link .desc {
+  font-family: var(--tui-font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* === Search === */
+.VPLocalSearchBox .search-input {
+  font-family: var(--tui-font-mono);
+}
+
+/* === Background texture === */
+.VPDoc,
+.VPHome {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.015'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}

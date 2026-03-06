@@ -102,8 +102,6 @@ const demoAssetVersion = '20260223-2';
 </div>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
-
 .landing-shell {
   max-width: 1120px;
   margin: 0 auto;
@@ -114,12 +112,12 @@ const demoAssetVersion = '20260223-2';
 .landing-shell .step-title,
 .landing-shell h1,
 .landing-shell h2 {
-  font-family: 'Manrope', 'Arial', sans-serif;
+  font-family: var(--tui-font-mono);
 }
 
 .step-title,
 .step-number {
-  font-family: 'Space Grotesk', 'Manrope', 'Arial', sans-serif;
+  font-family: var(--tui-font-mono);
   letter-spacing: -0.01em;
 }
 
@@ -144,7 +142,7 @@ const demoAssetVersion = '20260223-2';
 
 .demo-section video {
   width: 100%;
-  border-radius: 12px;
+  border-radius: 0;
   border: 1px solid var(--vp-c-divider);
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.28);
   animation: card-enter 380ms ease-out;
@@ -167,8 +165,9 @@ const demoAssetVersion = '20260223-2';
   grid-template-columns: repeat(5, 1fr);
   gap: 1px;
   background: var(--vp-c-divider);
-  border-radius: 12px;
+  border-radius: 0;
   overflow: hidden;
+  border: 1px solid var(--vp-c-divider);
 }
 
 @media (max-width: 960px) {
@@ -197,6 +196,11 @@ const demoAssetVersion = '20260223-2';
   color: var(--vp-c-brand-1);
   margin-bottom: 0.5rem;
   font-variant-numeric: tabular-nums;
+}
+
+.workflow-step .step-number::before {
+  content: '$ ';
+  color: var(--vp-c-text-3);
 }
 
 .workflow-step .step-title {
