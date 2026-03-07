@@ -54,6 +54,7 @@ export default {
       { text: 'Get Started', link: '/installation' },
       { text: 'Mining', link: '/mining-workflow' },
       { text: 'Configuration', link: '/configuration' },
+      { text: 'Changelog', link: '/changelog' },
       { text: 'Troubleshooting', link: '/troubleshooting' },
     ],
     sidebar: [
@@ -94,6 +95,7 @@ export default {
           { text: 'Building & Testing', link: '/development' },
           { text: 'Architecture', link: '/architecture' },
           { text: 'IPC + Runtime Contracts', link: '/ipc-contracts' },
+          { text: 'Changelog', link: '/changelog' },
         ],
       },
     ],

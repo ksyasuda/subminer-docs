@@ -58,6 +58,7 @@ subminer --start video.mkv      # optional explicit overlay start when plugin au
 subminer -S video.mkv           # same as above via --start-overlay
 subminer https://youtu.be/...   # YouTube playback (requires yt-dlp)
 subminer ytsearch:"jp news"     # YouTube search
+subminer --setup                # Open first-run setup popup
 ```
 
 ## Subcommands
@@ -85,6 +86,7 @@ Use `subminer <subcommand> -h` for command-specific help.
 | `-d, --directory`     | Video search directory (default: cwd)               |
 | `-r, --recursive`     | Search directories recursively                      |
 | `-R, --rofi`          | Use rofi instead of fzf                             |
+| `--setup`               | Open first-run setup popup manually                    |
 | `--start`             | Explicitly start overlay after mpv launches         |
 | `-S, --start-overlay` | Explicitly start overlay after mpv launches         |
 | `-T, --no-texthooker` | Disable texthooker server                           |

@@ -12,7 +12,7 @@
 4. Subtitles are tokenized with Yomitan's internal parser
 5. Words are displayed as interactive spans in the overlay
 6. Hovering or clicking a word triggers Yomitan popup for dictionary lookup
-7. Optional [subtitle annotations](/subtitle-annotations) (N+1, frequency, JLPT) highlight useful cues in real time
+7. Optional [subtitle annotations](/subtitle-annotations) (N+1, character-name, frequency, JLPT) highlight useful cues in real time
 
 There are two ways to use SubMiner — the `subminer` wrapper script or the mpv plugin:
 
@@ -53,6 +53,7 @@ subminer --start video.mkv        # Optional explicit overlay start (use when pl
 subminer -S video.mkv             # Same as above via --start-overlay
 subminer https://youtu.be/...     # Play a YouTube URL
 subminer ytsearch:"jp news"       # Play first YouTube search result
+subminer --setup                  # Open first-run setup popup
 subminer --log-level debug video.mkv # Enable verbose logs for launch/debugging
 subminer --log-level warn video.mkv  # Set logging level explicitly
 
@@ -83,6 +84,7 @@ subminer yt --mode preprocess --whisper-bin /path/to/whisper-cli --whisper-model
 SubMiner.AppImage --background             # Start in background (tray + IPC wait, minimal logs)
 SubMiner.AppImage --start --texthooker   # Start overlay with texthooker
 SubMiner.AppImage --texthooker           # Launch texthooker only (no overlay window)
+SubMiner.AppImage --setup                  # Open first-run setup popup
 SubMiner.AppImage --stop                  # Stop overlay
 SubMiner.AppImage --start --toggle        # Start MPV IPC + toggle visibility
 SubMiner.AppImage --show-visible-overlay              # Force show visible overlay
@@ -125,6 +127,24 @@ SubMiner.AppImage --help                  # Show all options
 - `subminer texthooker`: texthooker-only shortcut (same behavior as `--texthooker`).
 - `subminer app` / `subminer bin`: direct passthrough to the SubMiner binary/AppImage.
 - Subcommand help pages are available (for example `subminer jellyfin -h`, `subminer yt -h`).
+
+### First-Run Setup
+
+SubMiner auto-opens the setup popup on fresh installs when launched with `--start` or `--background` and setup is incomplete.
+
+You can also open it manually:
+
+```bash
+subminer --setup
+SubMiner.AppImage --setup
+```
+
+Setup flow:
+
+- plugin status: install (or skip) the bundled mpv plugin
+- dictionary check: ensure at least one bundled Yomitan dictionary is available
+- `Finish setup` stays disabled until dictionary availability is detected
+- finish action writes setup completion state and suppresses future auto-open prompts
 
 AniList character dictionary auto-sync (optional):
 

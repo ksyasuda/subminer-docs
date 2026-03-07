@@ -78,6 +78,7 @@ The configuration file includes several main sections:
 - [**Auto-Start Overlay**](#auto-start-overlay) - Automatically show overlay on MPV connection
 - [**Startup Warmups**](#startup-warmups) - Control what preloads on startup vs first-use defer
 - [**WebSocket Server**](#websocket-server) - Built-in subtitle broadcasting server
+- [**Annotation WebSocket**](#annotation-websocket) - Dedicated annotated subtitle payload stream
 - [**Texthooker**](#texthooker) - Control browser opening behavior
 
 **Subtitle Display**
@@ -200,6 +201,26 @@ See `config.example.jsonc` for detailed configuration options.
 | `enabled` | `true`, `false`, `"auto"` | `"auto"` (default) disables if mpv_websocket is detected |
 | `port`    | number                    | WebSocket server port (default: 6677)                    |
 
+### Annotation WebSocket
+
+SubMiner also exposes a dedicated annotated websocket stream for the bundled texthooker UI and token-aware clients.
+
+This stream includes subtitle text plus token metadata (N+1, known-word, frequency, JLPT, and character-name annotation context).
+
+```json
+{
+  "annotationWebsocket": {
+    "enabled": true,
+    "port": 6678
+  }
+}
+```
+
+| Option    | Values             | Description                                              |
+| --------- | ------------------ | -------------------------------------------------------- |
+| `enabled` | `true`, `false`    | Toggle annotated websocket stream (independent of `websocket`) |
+| `port`    | number             | Annotation websocket port (default: 6678)                 |
+
 ### Texthooker
 
 Control whether the browser opens automatically when texthooker starts:
@@ -209,10 +230,16 @@ See `config.example.jsonc` for detailed configuration options.
 ```json
 {
   "texthooker": {
+    "launchAtStartup": true,
     "openBrowser": true
   }
 }
 ```
+
+| Option           | Values          | Description                                                                                      |
+| ---------------- | --------------- | ------------------------------------------------------------------------------------------------ |
+| `launchAtStartup`| `true`, `false` | Start texthooker automatically with SubMiner startup (default: `true`)                            |
+| `openBrowser`    | `true`, `false` | Open browser tab when texthooker starts (default: `true`)                                          |
 
 ## Subtitle Display
 
@@ -811,7 +838,12 @@ AniList integration is opt-in and disabled by default. Enable it to allow SubMin
       "refreshTtlHours": 168,
       "maxLoaded": 3,
       "evictionPolicy": "delete",
-      "profileScope": "all"
+      "profileScope": "all",
+      "collapsibleSections": {
+        "description": false,
+        "characterInformation": false,
+        "voicedBy": false
+      }
     }
   }
 }
@@ -825,6 +857,9 @@ AniList integration is opt-in and disabled by default. Enable it to allow SubMin
 | `characterDictionary.refreshTtlHours` | number                  | Legacy compatibility setting. Parsed and preserved, but merged dictionary retention is now usage-based |
 | `characterDictionary.maxLoaded`       | number                  | Maximum number of most-recently-used AniList media snapshots included in the merged dictionary (default: `3`) |
 | `characterDictionary.evictionPolicy`  | `"delete"`, `"disable"` | Legacy compatibility setting. Parsed and preserved, but merged dictionary eviction is now usage-based |
+| `characterDictionary.collapsibleSections.description` | `true`, `false` | Open the Description section by default in generated dictionary entries |
+| `characterDictionary.collapsibleSections.characterInformation` | `true`, `false` | Open the Character Information section by default in generated dictionary entries |
+| `characterDictionary.collapsibleSections.voicedBy` | `true`, `false` | Open the Voiced by section by default in generated dictionary entries |
 | `characterDictionary.profileScope`    | `"all"`, `"active"`     | Apply dictionary settings updates to all Yomitan profiles or only active profile                 |
 
 When `enabled` is `true` and `accessToken` is empty, SubMiner opens an AniList setup helper window. Keep `enabled` as `false` to disable all AniList setup/update behavior.

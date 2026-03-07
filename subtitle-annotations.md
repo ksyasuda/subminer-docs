@@ -1,8 +1,8 @@
 # Subtitle Annotations
 
-SubMiner annotates subtitle tokens in real time as they appear in the overlay. Three annotation layers work together to surface useful context while you watch: **N+1 highlighting**, **frequency highlighting**, and **JLPT tagging**.
+SubMiner annotates subtitle tokens in real time as they appear in the overlay. Four annotation layers work together to surface useful context while you watch: **N+1 highlighting**, **character-name highlighting**, **frequency highlighting**, and **JLPT tagging**.
 
-All three are opt-in and configured under `subtitleStyle` and `ankiConnect.nPlusOne` in your config. They apply independently — you can enable any combination.
+All four are opt-in and configured under `subtitleStyle` and `ankiConnect.nPlusOne` in your config. They apply independently — you can enable any combination.
 
 ## N+1 Word Highlighting
 
@@ -31,6 +31,23 @@ N+1 highlighting identifies sentences where you know every word except one, maki
 ::: tip
 Set `refreshMinutes` to `1440` (24 hours) for daily sync if your Anki collection is large.
 :::
+
+## Character-Name Highlighting
+
+Character-name matches are built from the active merged SubMiner character dictionary (including AniList sync output when enabled).
+
+**How it works:**
+
+1. Subtitles are tokenized, then candidate name tokens are matched against the character dictionary.
+2. Matching tokens receive a dedicated style distinct from N+1 and frequency layers.
+3. This layer can be independently toggled with `subtitleStyle.nameMatchEnabled`.
+
+**Key settings:**
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `subtitleStyle.nameMatchEnabled` | `true` | Enable character-name token highlighting |
+| `subtitleStyle.nameMatchColor` | `#f5bde6` | Color used for character-name matches |
 
 ## Frequency Highlighting
 
@@ -94,9 +111,10 @@ JLPT tagging requires the offline vocabulary bundle. See [JLPT Vocabulary Bundle
 
 ## Runtime Toggles
 
-All three annotation layers can be toggled at runtime via the mpv command menu without restarting:
+All annotation layers can be toggled at runtime via the mpv command menu without restarting:
 
 - `ankiConnect.nPlusOne.highlightEnabled` (`On` / `Off`)
+- `subtitleStyle.nameMatchEnabled` (`On` / `Off`)
 - `subtitleStyle.enableJlpt` (`On` / `Off`)
 - `subtitleStyle.frequencyDictionary.enabled` (`On` / `Off`)
 
@@ -107,6 +125,7 @@ Toggles only apply to new subtitle lines after the change — the currently disp
 When multiple annotations apply to the same token, the visual priority is:
 
 1. **N+1 target** (highest) — the single unknown word in an N+1 sentence
-2. **Frequency highlight** — common-word coloring
-3. **JLPT underline** — level-based underline (stacks with the above since it uses underline rather than text color)
-4. **Known-word color** — already-learned token tint
+2. **Character-name match** — dictionary-driven character-name token styling
+3. **Known-word color** — already-learned token tint
+4. **Frequency highlight** — common-word coloring (not applied when N+1/character-name/known-word already matched)
+5. **JLPT underline** — level-based underline (stacks with the above since it uses underline rather than text color)

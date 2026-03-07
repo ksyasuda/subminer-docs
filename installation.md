@@ -194,7 +194,7 @@ See [MPV Plugin](/mpv-plugin) for the full configuration reference, script messa
 After installing, confirm SubMiner is working:
 
 ```bash
-# Play a file (default plugin config auto-starts visible overlay and waits for annotation readiness)
+# Play a file (default plugin config auto-starts visible overlay and waits for annotation readiness; first launch may open first-run setup popup)
 subminer video.mkv
 
 # Optional explicit overlay start for setups with plugin auto_start=no
