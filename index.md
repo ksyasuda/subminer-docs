@@ -139,6 +139,14 @@ const demoAssetVersion = '20260223-2';
   font-family: var(--tui-font-mono);
 }
 
+.VPHome :deep(.VPFeature),
+.VPHome :deep(.VPButton),
+.landing-shell .workflow-step,
+.landing-shell .demo-window,
+.landing-shell .demo-window__bar {
+  border-radius: 8px;
+}
+
 .step-title,
 .step-number {
   font-family: var(--tui-font-mono);
@@ -164,6 +172,7 @@ const demoAssetVersion = '20260223-2';
   align-items: stretch;
   gap: 0;
   border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -266,6 +275,7 @@ const demoAssetVersion = '20260223-2';
 
 .demo-window {
   border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
   overflow: hidden;
   animation: step-enter 400ms ease-out 300ms both;
   box-shadow:

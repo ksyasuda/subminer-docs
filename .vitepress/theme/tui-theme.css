@@ -399,7 +399,7 @@ body {
 .VPHero .actions .action .VPButton {
   font-family: var(--tui-font-mono);
   font-size: 13px;
-  border-radius: 0;
+  border-radius: 8px;
   text-transform: lowercase;
   transition: all var(--tui-transition);
 }
@@ -426,7 +426,7 @@ body {
 
 /* === Features === */
 .VPFeatures .VPFeature {
-  border-radius: 0 !important;
+  border-radius: 8px !important;
   border: 1px solid var(--vp-c-divider) !important;
   transition: border-color var(--tui-transition), background var(--tui-transition),
     transform var(--tui-transition);
