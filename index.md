@@ -45,7 +45,7 @@ features:
       src: /assets/highlight.svg
       alt: Highlight icon
     title: Reading Annotations
-    details: Combines N+1 targeting, Jiten frequency highlighting, and JLPT tagging so useful cues stay visible while you read.
+    details: Combines N+1 targeting, character-name matching, frequency highlighting, and JLPT tagging so useful cues stay visible while you read.
     link: /subtitle-annotations
     linkText: Annotation details
   - icon:

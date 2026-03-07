@@ -129,8 +129,8 @@ SubMiner.AppImage --help                  # Show all options
 AniList character dictionary auto-sync (optional):
 
 - Enable with `anilist.characterDictionary.enabled=true` in config.
-- Sync is per AniList media ID (no season merge); only currently watched media is synced.
-- Rotation limit defaults to 3 loaded dictionaries (`maxLoaded`).
+- SubMiner syncs the currently watched AniList media into a per-media snapshot, then rebuilds one merged `SubMiner Character Dictionary` from the most recently used snapshots.
+- Rotation limit defaults to 3 recent media snapshots in that merged dictionary (`maxLoaded`).
 
 Use subcommands for Jellyfin/YouTube command families (`subminer jellyfin ...`, `subminer yt ...`).
 Top-level launcher flags like `--jellyfin-*` and `--yt-subgen-*` are intentionally rejected.
@@ -229,8 +229,19 @@ Notes:
 These keybindings only work when the overlay window has focus. See [Configuration](/configuration) for customization.
 
 By default, hovering over subtitle text pauses mpv playback and leaving the subtitle area resumes playback. Set `subtitleStyle.autoPauseVideoOnHover` to `false` to disable this behavior.
+If you want playback to pause while the Yomitan popup is open, set `subtitleStyle.autoPauseVideoOnYomitanPopup` to `true`.
 
 ### Drag-and-drop Queueing
 
 - Drag and drop one or more video files onto the overlay to replace current playback (`loadfile ... replace` for first file, then append remainder).
 - Hold `Shift` while dropping to append all dropped files to the current MPV playlist.
+
+## How It Works
+
+1. MPV runs with an IPC socket at `/tmp/subminer-socket`
+2. The overlay connects and subscribes to subtitle changes
+3. Subtitles are tokenized with Yomitan's internal parser
+4. Words are displayed as clickable spans
+5. Known words, N+1 targets, JLPT/frequency hits, and character-name matches can be color-coded in the overlay
+6. Clicking a word triggers Yomitan popup for dictionary lookup
+7. Texthooker server runs at `http://127.0.0.1:5174` for external tools

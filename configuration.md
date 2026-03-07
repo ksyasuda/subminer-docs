@@ -259,8 +259,11 @@ See `config.example.jsonc` for detailed configuration options.
 | `enableJlpt`                       | boolean     | Enable JLPT level underline styling (`false` by default)                                                                   |
 | `preserveLineBreaks`               | boolean     | Preserve line breaks in visible overlay subtitle rendering (`false` by default). Enable to mirror mpv line layout.         |
 | `autoPauseVideoOnHover`            | boolean     | Pause playback while mouse hovers subtitle text, then resume on leave (`true` by default).                                 |
+| `autoPauseVideoOnYomitanPopup`     | boolean     | Pause playback while the Yomitan popup is open, then resume when the popup closes (`false` by default).                    |
 | `hoverTokenColor`                  | string      | Hex color used for hovered subtitle token highlight in mpv (default: catppuccin mauve)                                     |
 | `hoverTokenBackgroundColor`        | string      | CSS color used for hovered subtitle token background highlight (default: semi-transparent dark)                            |
+| `nameMatchEnabled`                 | boolean     | Enable subtitle token coloring for matches from the SubMiner character dictionary (`true` by default)                      |
+| `nameMatchColor`                   | string      | Hex color used for subtitle tokens matched from the SubMiner character dictionary (default: `#f5bde6`)                     |
 | `frequencyDictionary.enabled`      | boolean     | Enable frequency highlighting from dictionary lookups (`false` by default)                                                 |
 | `frequencyDictionary.sourcePath`   | string      | Path to a local frequency dictionary root. Leave empty or omit to use installed/default frequency-dictionary search paths. |
 | `frequencyDictionary.topX`         | number      | Only color tokens whose frequency rank is `<= topX` (`1000` by default)                                                    |
@@ -286,6 +289,12 @@ Lookup behavior:
 - Frequency highlighting skips tokens that look like non-lexical SFX/interjection noise (for example kana reduplication or short kana endings like `っ`), even when dictionary ranks exist.
 
 In `single` mode all highlights use `singleColor`; in `banded` mode tokens map to five ascending color bands from most common to least common inside the topX window.
+
+Character-name highlighting is separate from N+1 and frequency highlighting:
+
+- `nameMatchEnabled` controls whether SubMiner includes character-dictionary name matches in subtitle token metadata and renderer styling.
+- `nameMatchColor` sets the highlight color for those matched character names.
+- Matches come from the bundled SubMiner character dictionary, including AniList-synced merged dictionaries when enabled.
 
 Secondary subtitle defaults: `fontFamily: "Inter, Noto Sans, Helvetica Neue, sans-serif"`, `fontSize: 24`, `fontColor: "#cad3f5"`, `backgroundColor: "transparent"`. Any property not set in `secondary` falls back to the CSS defaults.
 
@@ -812,20 +821,21 @@ AniList integration is opt-in and disabled by default. Enable it to allow SubMin
 | ------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------ |
 | `enabled`                             | `true`, `false`         | Enable AniList post-watch progress updates (default: `false`)                                    |
 | `accessToken`                         | string                  | Optional explicit AniList access token override (default: empty string)                          |
-| `characterDictionary.enabled`         | `true`, `false`         | Enable automatic import/update of character dictionaries for the currently watched AniList media |
-| `characterDictionary.refreshTtlHours` | number                  | Refresh TTL in hours for current media dictionary generation (default: `168`)                    |
-| `characterDictionary.maxLoaded`       | number                  | Maximum loaded character dictionaries kept in rotation (default: `3`)                            |
-| `characterDictionary.evictionPolicy`  | `"delete"`, `"disable"` | On overflow, either remove dictionary from DB (`delete`) or only disable in settings (`disable`) |
+| `characterDictionary.enabled`         | `true`, `false`         | Enable automatic import/update of the merged SubMiner character dictionary for recent AniList media |
+| `characterDictionary.refreshTtlHours` | number                  | Legacy compatibility setting. Parsed and preserved, but merged dictionary retention is now usage-based |
+| `characterDictionary.maxLoaded`       | number                  | Maximum number of most-recently-used AniList media snapshots included in the merged dictionary (default: `3`) |
+| `characterDictionary.evictionPolicy`  | `"delete"`, `"disable"` | Legacy compatibility setting. Parsed and preserved, but merged dictionary eviction is now usage-based |
 | `characterDictionary.profileScope`    | `"all"`, `"active"`     | Apply dictionary settings updates to all Yomitan profiles or only active profile                 |
 
 When `enabled` is `true` and `accessToken` is empty, SubMiner opens an AniList setup helper window. Keep `enabled` as `false` to disable all AniList setup/update behavior.
 
 Character dictionary sync behavior:
 
-- Dictionary identity is AniList **media ID** (season-level when AniList has separate media IDs).
-- No series/franchise merge across seasons.
-- No proactive download of unseen seasons.
+- Snapshot identity is still AniList **media ID**.
 - Sync/import runs only for the currently watched media when media path/title changes.
+- SubMiner keeps a most-recently-used list of synced AniList media snapshots and rebuilds one merged Yomitan dictionary from that active set.
+- `maxLoaded` controls how many recent AniList media snapshots stay in the merged dictionary at once.
+- The merged dictionary title stays stable as `SubMiner Character Dictionary`, so Yomitan sees one rotating dictionary instead of one dictionary per anime.
 
 Current post-watch behavior:
 

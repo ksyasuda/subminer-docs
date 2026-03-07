@@ -34,10 +34,11 @@ The visible overlay renders subtitles as tokenized, clickable word spans. Each w
 
 - Word-level click targets for Yomitan lookup
 - Auto pause/resume on subtitle hover (enabled by default via `subtitleStyle.autoPauseVideoOnHover`)
+- Optional pause while the Yomitan popup is open (`subtitleStyle.autoPauseVideoOnYomitanPopup`)
 - Right-click to pause/resume
 - Right-click + drag to reposition subtitles
 - Modal dialogs for Jimaku search, field grouping, subsync, and runtime options
-- **N+1 highlighting** — known words from your Anki deck are visually highlighted
+- **Reading annotations** — known words, N+1 targets, character-name matches, JLPT levels, and frequency hits can all be visually highlighted
 
 Toggle visibility with `Alt+Shift+O` (global) or `y-t` (mpv plugin).
 

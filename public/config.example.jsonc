@@ -108,8 +108,11 @@
     "enableJlpt": false, // Enable JLPT vocabulary level underlines. When disabled, JLPT tagging lookup and underlines are skipped. Values: true | false
     "preserveLineBreaks": false, // Preserve line breaks in visible overlay subtitle rendering. When false, line breaks are flattened to spaces for a single-line flow. Values: true | false
     "autoPauseVideoOnHover": true, // Automatically pause mpv playback while hovering subtitle text, then resume on leave. Values: true | false
+    "autoPauseVideoOnYomitanPopup": false, // Automatically pause mpv playback while Yomitan popup is open, then resume when popup closes. Values: true | false
     "hoverTokenColor": "#f4dbd6", // Hex color used for hovered subtitle token highlight in mpv.
     "hoverTokenBackgroundColor": "rgba(54, 58, 79, 0.84)", // CSS color used for hovered subtitle token background highlight in mpv.
+    "nameMatchEnabled": true, // Enable subtitle token coloring for matches from the SubMiner character dictionary. Values: true | false
+    "nameMatchColor": "#f5bde6", // Hex color used when a subtitle token matches an entry from the SubMiner character dictionary.
     "fontFamily": "M PLUS 1 Medium, Source Han Sans JP, Noto Sans CJK JP", // Font family setting.
     "fontSize": 35, // Font size setting.
     "fontColor": "#cad3f5", // Font color setting.
@@ -264,12 +267,12 @@
     "enabled": false, // Enable AniList post-watch progress updates. Values: true | false
     "accessToken": "", // Optional explicit AniList access token override; leave empty to use locally stored token from setup.
     "characterDictionary": {
-      "enabled": false, // Enable automatic Yomitan character dictionary sync for currently watched AniList media. Values: true | false
-      "refreshTtlHours": 168, // TTL in hours before refreshing the currently watched media dictionary.
-      "maxLoaded": 3, // Maximum number of auto-synced AniList dictionaries kept loaded at once.
-      "evictionPolicy": "delete", // Eviction behavior when maxLoaded is exceeded. Values: disable | delete
+      "enabled": false, // Enable automatic Yomitan character dictionary sync for the merged recent-anime dictionary. Values: true | false
+      "refreshTtlHours": 168, // Legacy compatibility setting; merged dictionary retention is now usage-based.
+      "maxLoaded": 3, // Maximum number of most-recently-used AniList media snapshots included in the merged dictionary.
+      "evictionPolicy": "delete", // Legacy compatibility setting; merged dictionary eviction is now usage-based. Values: disable | delete
       "profileScope": "all", // Yomitan profile scope for dictionary enable/disable updates. Values: all | active
-    }, // Per-media AniList character dictionary auto sync settings (no season merge).
+    }, // MRU-based merged AniList character dictionary auto sync settings.
   }, // Anilist API credentials and update behavior.
 
   // ==========================================
