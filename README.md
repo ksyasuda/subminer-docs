@@ -15,10 +15,3 @@ Build and preview:
 bun run docs:build
 bun run docs:preview
 ```
-
-## Relationship to SubMiner
-
-- App/source repo: `../SubMiner`
-- Live docs: <https://docs.subminer.moe>
-
-Content pages, theme code, and docs-only tests live in this repo root.
