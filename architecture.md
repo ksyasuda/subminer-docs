@@ -142,43 +142,43 @@ flowchart LR
   classDef extrt fill:#eed49f,stroke:#494d64,color:#24273a,stroke-width:1.5px
 
   subgraph ExtRt["External Runtimes"]
-    Launcher["launcher/<br/>CLI dispatch"]:::extrt
-    Plugin["subminer/init.lua<br/>mpv plugin"]:::extrt
+    Launcher["Launcher CLI"]:::extrt
+    Plugin["mpv Plugin"]:::extrt
   end
 
   subgraph Ext["External Systems"]
-    mpvExt["mpv player"]:::ext
+    mpvExt["mpv"]:::ext
     AnkiExt["AnkiConnect"]:::ext
-    JimakuExt["Jimaku API"]:::ext
-    TrackerExt["Window Tracker<br/>Hyprland · Sway<br/>X11 · macOS"]:::ext
-    AnilistExt["AniList API"]:::ext
+    JimakuExt["Jimaku"]:::ext
+    TrackerExt["Window Tracker"]:::ext
+    AnilistExt["AniList"]:::ext
     JellyfinExt["Jellyfin"]:::ext
-    DiscordExt["Discord RPC"]:::ext
+    DiscordExt["Discord"]:::ext
   end
 
-  Main["main.ts<br/>composition root"]:::entry
+  Main["main.ts"]:::entry
 
-  subgraph Comp["Composition — src/main/"]
-    Startup["Startup & Lifecycle<br/>startup · app-lifecycle<br/>startup-lifecycle · state"]:::comp
-    Wiring["Runtime Wiring<br/>ipc-runtime · cli-runtime<br/>overlay-runtime"]:::comp
-    Composers["Composers<br/>mpv · anilist<br/>jellyfin"]:::comp
+  subgraph Comp["Composition"]
+    Startup["Startup & Lifecycle"]:::comp
+    Wiring["Runtime Wiring"]:::comp
+    Composers["Domain Composers"]:::comp
   end
 
-  subgraph Svc["Services — src/core/services/"]
-    Mpv["MPV Stack<br/>transport · protocol<br/>properties · metrics"]:::svc
-    OverlaySvc["Overlay Manager<br/>window · visibility · bridge<br/>mpv-sub-visibility"]:::svc
-    Mining["Mining & Subtitles<br/>mining · field-grouping<br/>subtitle-ws · tokenizer"]:::svc
-    AnkiProxy["Anki Integration<br/>anki-connect-proxy<br/>note-update-workflow"]:::svc
-    Integrations["Integrations<br/>jimaku · subsync<br/>texthooker · yomitan"]:::svc
-    Tracking["Tracking<br/>anilist · jellyfin<br/>immersion · discord"]:::svc
-    Config["Config & Runtime<br/>hot-reload<br/>runtime-options"]:::svc
+  subgraph Svc["Services"]
+    Mpv["MPV Stack"]:::svc
+    OverlaySvc["Overlay Manager"]:::svc
+    Mining["Mining & Subtitles"]:::svc
+    AnkiProxy["Anki Proxy"]:::svc
+    Integrations["Integrations"]:::svc
+    Tracking["Tracking"]:::svc
+    Config["Config & Options"]:::svc
   end
 
-  Bridge(["preload.ts<br/>Electron IPC"]):::bridge
+  Bridge(["preload.ts"]):::bridge
 
-  subgraph Rend["Renderer — src/renderer/"]
-    OverlayWin["Main overlay window<br/>primary + secondary subtitles"]:::rend
-    UI["subtitle-render<br/>positioning<br/>handlers · modals"]:::rend
+  subgraph Rend["Renderer"]
+    OverlayWin["Overlay Window"]:::rend
+    UI["Subtitles & Modals"]:::rend
   end
 
   Launcher -->|"CLI"| Main
@@ -187,7 +187,7 @@ flowchart LR
   Main --> Comp
   Comp --> Svc
 
-  mpvExt <-->|"JSON socket"| Mpv
+  mpvExt <-->|"socket"| Mpv
   AnkiExt <-->|"HTTP"| AnkiProxy
   JimakuExt <-->|"HTTP"| Integrations
   TrackerExt <-->|"platform"| OverlaySvc
@@ -280,67 +280,57 @@ flowchart LR
   classDef shutdown fill:#ed8796,stroke:#494d64,color:#24273a,stroke-width:1.5px
   classDef warmup fill:#eed49f,stroke:#494d64,color:#24273a,stroke-width:1.5px
 
-  CLI["CLI args &<br/>environment"]:::start
-  CLI --> Proto["Module-level init<br/>register protocols<br/>construct services<br/>wire deps"]:::phase
-  Proto --> Parse["startup.ts<br/>parse argv<br/>detect backend"]:::phase
-  Parse --> GenCheck{"--generate<br/>-config?"}:::decision
-  GenCheck -->|"yes"| GenExit["Write template<br/>& exit"]:::phase
-  GenCheck -->|"no"| Lock["app-lifecycle.ts<br/>single-instance lock<br/>lifecycle hooks"]:::phase
+  CLI["CLI + Environment"]:::start
+  CLI --> Init["Module Init"]:::phase
+  Init --> Parse["Parse argv"]:::phase
+  Parse --> GenCheck{"--generate\nconfig?"}:::decision
+  GenCheck -->|"yes"| GenExit["Write & exit"]:::phase
+  GenCheck -->|"no"| Lock["Acquire lock"]:::phase
 
-  Lock -->|"app.whenReady()"| Ready["composeAppReady<br/>Runtime()"]:::phase
+  Lock -->|"app.whenReady()"| Ready["App Ready"]:::phase
 
-  Ready --> Config["Config reload<br/>keybindings<br/>log level"]:::init
-  Ready --> MpvInit["MpvIpcClient<br/>connect socket<br/>subscribe 26 props"]:::init
-  Ready --> Platform["RuntimeOptions<br/>timing tracker<br/>immersion tracker"]:::init
+  Ready --> Config["Config + keybindings"]:::init
+  Ready --> MpvInit["MPV socket connect"]:::init
+  Ready --> Platform["Runtime services"]:::init
 
-  Config --> OverlayInit
-  MpvInit --> OverlayInit
-  Platform --> OverlayInit
+  Config & MpvInit & Platform --> OverlayInit["Overlay Init"]:::phase
 
-  OverlayInit["initializeOverlay<br/>Runtime()"]:::phase
+  OverlayInit --> MainWin["Create window"]:::init
+  OverlayInit --> Shortcuts["Register shortcuts"]:::init
 
-  OverlayInit --> MainWin["Main overlay window<br/>primary + secondary subtitles"]:::init
-  OverlayInit --> Shortcuts["Register global<br/>shortcuts"]:::init
-
-  MainWin --> Warmups
-  Shortcuts --> Warmups
-
-  Warmups["Background<br/>warmups"]:::phase
+  MainWin & Shortcuts --> Warmups["Background Warmups"]:::phase
 
   subgraph WarmupGroup[" "]
     direction TB
-    W1["MeCab<br/>+ worker thread"]:::warmup
+    W1["MeCab"]:::warmup
     W2["Yomitan"]:::warmup
-    W3["JLPT + freq<br/>dictionaries"]:::warmup
+    W3["Dictionaries"]:::warmup
     W4["Jellyfin"]:::warmup
     W5["Discord"]:::warmup
     W6["AniList"]:::warmup
-    W7["AnkiConnect<br/>proxy"]:::warmup
+    W7["Anki Proxy"]:::warmup
     W1 ~~~ W2 ~~~ W3 ~~~ W4 ~~~ W5 ~~~ W6 ~~~ W7
   end
 
   Warmups --> WarmupGroup
 
-  subgraph Loop["Runtime — event-driven"]
+  subgraph Loop["Event Loop"]
     direction TB
-    MpvEvt["mpv events: subtitle · timing · metrics"]:::runtime
-    IpcEvt["IPC: renderer requests · CLI commands"]:::runtime
-    ExtEvt["Shortcuts · config hot-reload"]:::runtime
-    MpvEvt & IpcEvt & ExtEvt --> Route["Route via composers"]:::runtime
-    Route --> Process["SubtitlePipeline<br/>normalize → tokenize → merge"]:::runtime
-    Process --> Broadcast["Update AppState<br/>broadcast to renderer + modals"]:::runtime
+    Events["mpv · IPC · shortcuts · config"]:::runtime
+    Events --> Route["Composers"]:::runtime
+    Route --> Pipeline["Subtitle Pipeline"]:::runtime
+    Pipeline --> Broadcast["State + Renderer"]:::runtime
   end
 
   WarmupGroup --> Loop
 
   style WarmupGroup fill:transparent,stroke:none
 
-  Loop -->|"quit signal"| Quit["will-quit"]:::shutdown
+  Loop -->|"quit"| Quit["Shutdown"]:::shutdown
 
-  Quit --> T1["Tray · config watcher<br/>global shortcuts"]:::shutdown
-  Quit --> T2["WebSocket · texthooker<br/>mpv socket · OSD log"]:::shutdown
-  Quit --> T3["Window tracker<br/>Yomitan parser"]:::shutdown
-  Quit --> T4["Immersion tracker<br/>Jellyfin · Discord<br/>Anki proxy · AniList"]:::shutdown
+  Quit --> T1["UI cleanup"]:::shutdown
+  Quit --> T2["Socket + server teardown"]:::shutdown
+  Quit --> T3["Flush tracking + state"]:::shutdown
 
   style Loop fill:#363a4f,stroke:#494d64,color:#cad3f5
 ```

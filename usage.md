@@ -4,6 +4,16 @@
 > SubMiner requires the bundled Yomitan instance to have at least one dictionary imported for lookups to work.
 > See [Yomitan setup](#yomitan-setup) for details.
 
+## How It Works
+
+1. SubMiner starts the overlay app in the background
+2. MPV runs with an IPC socket at `/tmp/subminer-socket`
+3. The overlay connects and subscribes to subtitle changes
+4. Subtitles are tokenized with Yomitan's internal parser
+5. Words are displayed as interactive spans in the overlay
+6. Hovering or clicking a word triggers Yomitan popup for dictionary lookup
+7. Optional [subtitle annotations](/subtitle-annotations) (N+1, frequency, JLPT) highlight useful cues in real time
+
 There are two ways to use SubMiner — the `subminer` wrapper script or the mpv plugin:
 
 | Approach            | Best For                                                                                                                                                                                                                 |
@@ -224,12 +234,3 @@ By default, hovering over subtitle text pauses mpv playback and leaving the subt
 
 - Drag and drop one or more video files onto the overlay to replace current playback (`loadfile ... replace` for first file, then append remainder).
 - Hold `Shift` while dropping to append all dropped files to the current MPV playlist.
-
-## How It Works
-
-1. MPV runs with an IPC socket at `/tmp/subminer-socket`
-2. The overlay connects and subscribes to subtitle changes
-3. Subtitles are tokenized with Yomitan's internal parser
-4. Words are displayed as clickable spans
-5. Clicking a word triggers Yomitan popup for dictionary lookup
-6. Texthooker server runs at `http://127.0.0.1:5174` for external tools

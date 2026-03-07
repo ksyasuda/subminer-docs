@@ -73,12 +73,19 @@ export default {
         items: [
           { text: 'Configuration', link: '/configuration' },
           { text: 'Keyboard Shortcuts', link: '/shortcuts' },
-          { text: 'Anki Integration', link: '/anki-integration' },
-          { text: 'Jellyfin Integration', link: '/jellyfin-integration' },
+          { text: 'Subtitle Annotations', link: '/subtitle-annotations' },
           { text: 'Immersion Tracking', link: '/immersion-tracking' },
-          { text: 'JLPT Vocabulary', link: '/jlpt-vocab-bundle' },
           { text: 'MPV Plugin', link: '/mpv-plugin' },
           { text: 'Troubleshooting', link: '/troubleshooting' },
+        ],
+      },
+      {
+        text: 'Integrations',
+        items: [
+          { text: 'Anki', link: '/anki-integration' },
+          { text: 'Jellyfin', link: '/jellyfin-integration' },
+          { text: 'Jimaku', link: '/configuration#jimaku' },
+          { text: 'AniList', link: '/configuration#anilist' },
         ],
       },
       {
