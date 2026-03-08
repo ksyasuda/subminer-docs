@@ -4,8 +4,8 @@ SubMiner stores immersion analytics in local SQLite (`immersion.sqlite`) by defa
 
 Verification notes:
 
-- `bun run test:immersion:sqlite` is the reproducible persistence lane; it builds `dist/**` and runs the SQLite-backed immersion tests under Node with `node:sqlite` support enabled via `--experimental-sqlite` on Node 22.
-- `bun run test:immersion:sqlite:src` is useful for quick source-level visibility, but under Bun 1.3.x the DB-backed cases may warn+skip when `node:sqlite` is unavailable.
+- `bun run test:immersion:sqlite` is the reproducible persistence lane; it builds `dist/**` and runs the SQLite-backed immersion tests under Bun.
+- `bun run test:immersion:sqlite:src` is useful for quick source-level visibility under Bun.
 - The dedicated lane covers DB-backed session finalization, telemetry persistence, and storage/session write paths beyond the seam-only reducer/queue tests.
 
 ## Runtime Model
@@ -94,7 +94,7 @@ SELECT
   cards_mined
 FROM imm_session_telemetry
 WHERE session_id = ?
-ORDER BY sample_ms DESC
+ORDER BY sample_ms DESC, telemetry_id DESC
 LIMIT ?;
 ```
 

@@ -37,6 +37,8 @@ make build-macos          # macOS DMG + ZIP (signed)
 make build-macos-unsigned # macOS DMG + ZIP (unsigned)
 ```
 
+`bun run build` includes the Yomitan build step. It builds the bundled Chrome extension directly from the `vendor/subminer-yomitan` submodule into `build/yomitan` using Bun.
+
 ## Launcher Artifact Workflow
 
 - Source of truth: `launcher/*.ts`
@@ -73,27 +75,53 @@ binary_path=/absolute/path/to/SubMiner/scripts/subminer-dev.sh
 
 ## Testing
 
-CI-equivalent local gate:
+Default lanes:
 
 ```bash
-bun run tsc --noEmit
-bun run test:fast
-bun run test:launcher:smoke:src
-bun run build
-bun run test:smoke:dist
-bun run docs:build
+bun run test           # alias for test:fast
+bun run test:fast      # default fast lane
+bun run test:full      # maintained source + launcher-unit + runtime compat surface
+bun run test:runtime:compat # compiled/runtime compatibility slice only
+bun run test:env       # launcher/plugin + env-sensitive verification
+bun run test:immersion:sqlite # SQLite persistence lane
+bun run test:subtitle  # maintained alass/ffsubsync subtitle surface
 ```
 
-Common focused commands:
+- `bun run test` and `bun run test:fast` cover config/core suites plus representative entry/runtime, Anki integration, release-workflow coverage, typecheck, and runtime-registry checks.
+- `bun run test:full` is the maintained full surface: Bun-compatible `src/**` discovery, Bun-compatible launcher unit discovery, and the compiled/runtime compatibility lane for suites routed through `dist/**`.
+- `bun run test:runtime:compat` covers the compiled/runtime slice directly: `ipc`, `anki-jimaku-ipc`, `overlay-manager`, `config-validation`, `startup-config`, and `registry`.
+- `bun run test:env` covers environment-sensitive checks: launcher smoke/plugin verification plus the Bun source SQLite lane.
+- `bun run test:immersion:sqlite` is the reproducible persistence lane when you need real DB-backed SQLite coverage under Bun.
+
+The Bun-managed discovery lanes intentionally exclude a small compiled/runtime-focused set: `src/core/services/ipc.test.ts`, `src/core/services/anki-jimaku-ipc.test.ts`, `src/core/services/overlay-manager.test.ts`, `src/main/config-validation.test.ts`, `src/main/runtime/startup-config.test.ts`, and `src/main/runtime/registry.test.ts`. `bun run test:runtime:compat` keeps them in the standard workflow via `dist/**`.
+
+Suggested local gate before handoff:
+
+```bash
+bun run typecheck
+bun run test:fast
+bun run test:env
+bun run build
+bun run test:smoke:dist
+```
+
+If you changed docs in the sibling docs repo, also run:
+
+```bash
+(cd ../subminer-docs && bun run docs:build)
+```
+
+Focused commands:
 
 ```bash
 bun run test:config       # Source-level config schema/validation tests
 bun run test:launcher     # Launcher regression tests (config discovery + command routing)
-bun run test:launcher:smoke:src # Launcher e2e smoke: launcher -> mpv IPC -> overlay start/stop wiring
 bun run test:core         # Source-level core regression tests (default lane)
-bun run test:fast         # Source-level config + core lane (no build prerequisite)
-bun run test:immersion:sqlite:src # Source lane; warns/skips if node:sqlite is unavailable in Bun
-bun run test:immersion:sqlite # Build + Node-backed SQLite persistence/finalization lane
+bun run test:launcher:smoke:src # Launcher e2e smoke: launcher -> mpv IPC -> overlay start/stop wiring
+bun run test:launcher:env:src # Launcher smoke + Lua plugin gate
+bun run test:src          # Bun-managed maintained src/** discovery lane
+bun run test:launcher:unit:src # Bun-managed maintained launcher unit lane
+bun run test:immersion:sqlite:src # Bun source lane
 ```
 
 Dist-level tests are now an explicit smoke lane used to validate compiled/runtime assumptions.
@@ -104,15 +132,26 @@ Smoke and optional deep dist commands:
 
 ```bash
 bun run build                 # compile dist artifacts
-bun run test:immersion:sqlite # compile + run SQLite-backed immersion tests with Node --experimental-sqlite
+bun run test:immersion:sqlite # compile + run SQLite-backed immersion tests under Bun
 bun run test:smoke:dist       # explicit smoke scope for compiled runtime
 bun run test:config:dist      # optional full dist config suite
 bun run test:core:dist        # optional full dist core suite
 ```
 
-Use `bun run test:immersion:sqlite` when you need real DB-backed coverage for the immersion tracker. The Bun source lane may skip those tests when `node:sqlite` is unavailable, but the dedicated Node-backed lane is what CI/release now uses for reproducible persistence verification.
+Use `bun run test:immersion:sqlite` when you need real DB-backed coverage for the immersion tracker.
 
-`bun run test:subtitle` and `bun run test:subtitle:dist` are currently placeholders and do not run an active suite.
+## Formatting
+
+Use the scoped formatter for normal app-repo work:
+
+```bash
+make pretty
+bun run format:check:src
+```
+
+- `make pretty` runs the maintained Prettier allowlist only (`format:src`).
+- `bun run format:check:src` checks the same scoped set without writing changes.
+- `bun run format` remains the broad repo-wide Prettier command; use it intentionally.
 
 ## Config Generation
 
@@ -127,12 +166,16 @@ make generate-example-config
 
 ## Documentation Site
 
-The docs use [VitePress](https://vitepress.dev/):
+The docs site now lives in the sibling `../subminer-docs` repo, not the main app repo.
+
+From the SubMiner app repo:
 
 ```bash
-make docs-dev     # Dev server at http://localhost:5173
-make docs         # Build static output
-make docs-preview # Preview built site at http://localhost:4173
+cd ../subminer-docs
+bun install
+bun run docs:dev     # Dev server at http://localhost:5173
+bun run docs:build   # Build static output
+bun run docs:preview # Preview built site at http://localhost:4173
 ```
 
 ## Makefile Reference
@@ -146,8 +189,8 @@ Run `make help` for a full list of targets. Key ones:
 | `make install`         | Install platform artifacts (wrapper, theme, AppImage/app bundle) |
 | `make install-plugin`  | Install mpv Lua plugin and config                                |
 | `make deps`            | Install JS dependencies (root + texthooker-ui)                   |
+| `make pretty`          | Run scoped Prettier formatting for maintained source/config files |
 | `make generate-config` | Generate default config from centralized registry                |
-| `make docs-dev`        | Run VitePress dev server                                         |
 
 ## Contributor Notes
 

@@ -9,7 +9,7 @@
 | Bun                  | Yes        | Required for `subminer` wrapper and source workflows     |
 | mpv                  | Yes        | Must support IPC sockets (`--input-ipc-server`)          |
 | ffmpeg               | For media  | Audio extraction and screenshot generation               |
-| MeCab + mecab-ipadic | No         | Optional fallback tokenizer for Japanese                 |
+| MeCab + mecab-ipadic | No         | Optional Japanese metadata enrichment (not the primary tokenizer) |
 | fuse2                | Linux only | Required for AppImage                                    |
 | yt-dlp               | No         | Recommended for YouTube playback and subtitle extraction |
 
@@ -57,8 +57,11 @@ The `subminer` wrapper uses a Bun shebang (`#!/usr/bin/env bun`), so [Bun](https
 ### From Source
 
 ```bash
-git clone https://github.com/ksyasuda/SubMiner.git
+git clone --recurse-submodules https://github.com/ksyasuda/SubMiner.git
 cd SubMiner
+# if you cloned without --recurse-submodules:
+git submodule update --init --recursive
+
 make build
 make build-launcher
 
@@ -68,6 +71,8 @@ make install
 
 `make build-launcher` generates the wrapper at `dist/launcher/subminer`. The checked-in launcher source remains `launcher/*.ts`.
 Do not use a repo-root `./subminer` artifact when building from source; workflow checks enforce `dist/launcher/subminer` as the only generated path.
+
+`make build` also builds the bundled Yomitan Chrome extension from the `vendor/subminer-yomitan` submodule into `build/yomitan` using Bun.
 
 ## macOS
 
@@ -86,11 +91,10 @@ brew install mpv mecab mecab-ipadic
 ### From Source (macOS)
 
 ```bash
-git clone https://github.com/ksyasuda/SubMiner.git
+git clone --recurse-submodules https://github.com/ksyasuda/SubMiner.git
 cd SubMiner
-bun install
-cd vendor/texthooker-ui && bun install --frozen-lockfile && bun run build && cd ../..
-bun run build:mac
+git submodule update --init --recursive
+make build-macos
 ```
 
 The built app will be available in the `release` directory (`.dmg` and `.zip`).
