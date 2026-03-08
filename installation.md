@@ -23,6 +23,8 @@
 
 **macOS** — macOS 10.13 or later. Accessibility permission required for window tracking.
 
+**Windows** — Windows 10 or later. Install `mpv` and keep it available on `PATH`; SubMiner's packaged build handles window tracking directly.
+
 ### Optional Tools
 
 | Tool              | Purpose                                                       |
@@ -140,6 +142,23 @@ Ensure `mecab` is available on your PATH when launching SubMiner.
 binary_path=/Applications/SubMiner.app/Contents/MacOS/subminer
 ```
 
+## Windows
+
+### Installer (Recommended)
+
+Download the latest Windows installer from [GitHub Releases](https://github.com/ksyasuda/SubMiner/releases/latest):
+
+- `SubMiner-<version>.exe` installs the app, Start menu shortcut, and default files under `Program Files`
+- `SubMiner-<version>.zip` is available as a portable fallback
+
+Install `mpv` separately and ensure `mpv.exe` is on `PATH`. `ffmpeg` is still required for media extraction, and MeCab remains optional.
+
+### Windows Usage Notes
+
+- Launch `SubMiner.exe` once to let the first-run setup flow create config/state and offer mpv plugin installation.
+- If you use the mpv plugin, leave `binary_path` empty unless SubMiner is installed in a non-standard location.
+- Native window tracking is built in on Windows; no `xdotool`, `xwininfo`, or compositor-specific helper is required.
+
 ## MPV Plugin (Recommended)
 
 The Lua plugin provides in-player keybindings to control the overlay from mpv. It communicates with SubMiner by invoking the binary with CLI flags.
@@ -196,6 +215,8 @@ See [MPV Plugin](/mpv-plugin) for the full configuration reference, script messa
 ## Verify Installation
 
 After installing, confirm SubMiner is working:
+
+On Windows, replace `SubMiner.AppImage` with `SubMiner.exe` in the direct app commands below.
 
 ```bash
 # Play a file (default plugin config auto-starts visible overlay and waits for annotation readiness; first launch may open first-run setup popup)

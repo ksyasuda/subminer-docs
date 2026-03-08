@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.5.0 (2026-03-08)
+- Added the initial packaged Windows release.
+- Added Windows-native mpv window tracking, launcher/runtime plumbing, and packaged helper assets.
+- Improved close behavior so ending playback hides the visible overlay while the background app stays running.
+- Limited the native overlay outline/debug frame to debug mode on Windows.
+
 ## v0.3.0 (2026-03-05)
 - Added keyboard-driven Yomitan navigation and popup controls, including optional auto-pause.
 - Added subtitle/jump keyboard handling fixes for smoother subtitle playback control.

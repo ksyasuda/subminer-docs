@@ -42,6 +42,8 @@ For restart-required sections, SubMiner shows a restart-needed notification.
 
 ## Commands
 
+On Windows, replace `SubMiner.AppImage` with `SubMiner.exe` in the direct packaged-app examples below.
+
 ```bash
 # Browse and play videos
 subminer                          # Current directory (uses fzf)
@@ -80,7 +82,7 @@ subminer app --anilist            # Pass args directly to SubMiner binary (examp
 subminer yt -o ~/subs https://youtu.be/...  # YouTube subcommand: output directory shortcut
 subminer yt --whisper-bin /path/to/whisper-cli --whisper-model /path/to/model.bin --whisper-vad-model /path/to/vad.bin https://youtu.be/...  # Override whisper fallback paths
 
-# Direct AppImage control
+# Direct packaged app control
 SubMiner.AppImage --background             # Start in background (tray + IPC wait, minimal logs)
 SubMiner.AppImage --start --texthooker   # Start overlay with texthooker
 SubMiner.AppImage --texthooker           # Launch texthooker only (no overlay window)
@@ -109,12 +111,12 @@ SubMiner.AppImage --help                  # Show all options
 - `--log-level` controls logger verbosity.
 - `--dev` and `--debug` are app/dev-mode switches; they are not log-level aliases.
 - `--background` defaults to quieter logging (`warn`) unless `--log-level` is set.
-- `--background` launched from a terminal detaches and returns the prompt; stop it with tray Quit or `SubMiner.AppImage --stop`.
+- `--background` launched from a terminal detaches and returns the prompt; stop it with tray Quit or `SubMiner.AppImage --stop` (`SubMiner.exe --stop` on Windows).
 - Linux desktop launcher starts SubMiner with `--background` by default (via electron-builder `linux.executableArgs`).
 - On Linux, the app now defaults `safeStorage` to `gnome-libsecret` for encrypted token persistence.
   Launcher pass-through commands also support `--password-store=<backend>` and forward it to the app when present.
   Override with e.g. `--password-store=basic_text`.
-- Use both when needed, for example `SubMiner.AppImage --start --dev --log-level debug`.
+- Use both when needed, for example `SubMiner.AppImage --start --dev --log-level debug` (or `SubMiner.exe --start --dev --log-level debug` on Windows).
 
 ### Launcher Subcommands
 
