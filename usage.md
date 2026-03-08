@@ -118,6 +118,23 @@ SubMiner.AppImage --help                  # Show all options
   Override with e.g. `--password-store=basic_text`.
 - Use both when needed, for example `SubMiner.AppImage --start --dev --log-level debug` (or `SubMiner.exe --start --dev --log-level debug` on Windows).
 
+### Windows mpv Shortcut
+
+If you enabled the optional Windows shortcut during install, SubMiner creates a `SubMiner mpv` shortcut in the Start menu and/or on the desktop. It runs `SubMiner.exe --launch-mpv`, which starts `mpv.exe` with SubMiner's `subminer` profile.
+
+You can use it three ways:
+
+- Double-click `SubMiner mpv` to open `mpv` with the SubMiner profile.
+- Drag a video file onto `SubMiner mpv` to launch that file with the same profile.
+- Run it directly from Command Prompt or PowerShell with `--launch-mpv`.
+
+```powershell
+& "C:\Program Files\SubMiner\SubMiner.exe" --launch-mpv
+& "C:\Program Files\SubMiner\SubMiner.exe" --launch-mpv "C:\Videos\episode 01.mkv"
+```
+
+This flow requires `mpv.exe` to be on `PATH`. If it is installed elsewhere, set `SUBMINER_MPV_PATH` to the full `mpv.exe` path before launching.
+
 ### Launcher Subcommands
 
 - `subminer jellyfin` / `subminer jf`: Jellyfin-focused workflow aliases.
