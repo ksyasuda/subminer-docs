@@ -9,6 +9,8 @@ import TuiLayout from './TuiLayout.vue';
 let mermaidLoader: Promise<any> | null = null;
 let plausibleTrackerInitialized = false;
 const MERMAID_MODAL_ID = 'mermaid-diagram-modal';
+const PLAUSIBLE_DOMAIN = 'subminer.moe';
+const PLAUSIBLE_ENDPOINT = 'https://worker.subminer.moe/api/event';
 
 async function initPlausibleTracker() {
   if (typeof window === 'undefined' || plausibleTrackerInitialized) {
@@ -17,12 +19,12 @@ async function initPlausibleTracker() {
 
   const { init } = await import('@plausible-analytics/tracker');
   init({
-    domain: 'subminer.moe',
-    endpoint: 'https://worker.subminer.moe/api/event',
+    domain: PLAUSIBLE_DOMAIN,
+    endpoint: PLAUSIBLE_ENDPOINT,
     outboundLinks: true,
     fileDownloads: true,
     formSubmissions: true,
-	captureOnLocalhost: false,
+    captureOnLocalhost: false,
   });
   plausibleTrackerInitialized = true;
 }

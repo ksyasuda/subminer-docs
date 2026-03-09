@@ -78,7 +78,7 @@ subminer dictionary /path/to/file-or-directory  # Generate character dictionary 
 subminer texthooker               # Launch texthooker-only mode
 subminer app --anilist            # Pass args directly to SubMiner binary (example: AniList login flow)
 subminer yt -o ~/subs https://youtu.be/...  # YouTube subcommand: output directory shortcut
-subminer yt --mode preprocess --whisper-bin /path/to/whisper-cli --whisper-model /path/to/model.bin https://youtu.be/...  # Pre-generate subtitle tracks before playback
+subminer yt --whisper-bin /path/to/whisper-cli --whisper-model /path/to/model.bin --whisper-vad-model /path/to/vad.bin https://youtu.be/...  # Override whisper fallback paths
 
 # Direct AppImage control
 SubMiner.AppImage --background             # Start in background (tray + IPC wait, minimal logs)
@@ -206,15 +206,13 @@ If you also use Yomitan in a browser, configure that browser profile separately;
 Notes:
 
 - Install `yt-dlp` so mpv can resolve YouTube streams and subtitle tracks reliably.
-- `subminer` supports three subtitle-generation modes for YouTube URLs:
-  - `automatic` (default): starts playback immediately, generates subtitles in the background, and loads them into mpv when ready.
-  - `preprocess`: generates subtitles first, then starts playback with generated `.srt` files attached.
-  - `off`: disables launcher generation and leaves subtitle handling to mpv/yt-dlp.
+- For YouTube URLs, `subminer` now generates any missing subtitles before mpv launch.
+- It probes manual/native YouTube subtitle tracks first, then falls back to local `whisper.cpp` only for missing tracks.
 - Primary subtitle target languages come from `youtubeSubgen.primarySubLanguages` (defaults to `["ja","jpn"]`).
 - Secondary target languages come from `secondarySub.secondarySubLanguages` (defaults to English if unset).
-- `subminer` prefers subtitle tracks from yt-dlp first, then falls back to local `whisper.cpp` (`whisper-cli`) when tracks are missing.
-- Whisper translation fallback currently only supports English secondary targets; non-English secondary targets rely on yt-dlp subtitle availability.
-- Configure defaults in `$XDG_CONFIG_HOME/SubMiner/config.jsonc` (or `~/.config/SubMiner/config.jsonc`) under `youtubeSubgen` and `secondarySub`, or override mode/tool paths via CLI flags/environment variables.
+- Whisper translation fallback currently only supports English secondary targets; non-English secondary targets rely on native/manual subtitle availability.
+- `youtubeSubgen.fixWithAi` can post-process whisper-generated `.srt` output with the shared top-level `ai` provider.
+- Configure defaults in `$XDG_CONFIG_HOME/SubMiner/config.jsonc` (or `~/.config/SubMiner/config.jsonc`) under `youtubeSubgen`, `secondarySub`, and top-level `ai`, or override whisper paths via CLI flags/environment variables.
 
 ## Keybindings
 

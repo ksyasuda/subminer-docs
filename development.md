@@ -213,9 +213,10 @@ Run `make help` for a full list of targets. Key ones:
 | `SUBMINER_ROFI_THEME`              | Override rofi theme path for launcher picker                                   |
 | `SUBMINER_LOG_LEVEL`               | Override app logger level (`debug`, `info`, `warn`, `error`)                   |
 | `SUBMINER_MPV_LOG`                 | Override mpv/app shared log file path                                          |
-| `SUBMINER_YT_SUBGEN_MODE`          | Override `youtubeSubgen.mode` for launcher                                     |
 | `SUBMINER_WHISPER_BIN`             | Override `youtubeSubgen.whisperBin` for launcher                               |
 | `SUBMINER_WHISPER_MODEL`           | Override `youtubeSubgen.whisperModel` for launcher                             |
+| `SUBMINER_WHISPER_VAD_MODEL`       | Override `youtubeSubgen.whisperVadModel` for launcher                          |
+| `SUBMINER_WHISPER_THREADS`         | Override `youtubeSubgen.whisperThreads` for launcher                           |
 | `SUBMINER_YT_SUBGEN_OUT_DIR`       | Override generated subtitle output directory                                   |
 | `SUBMINER_YT_SUBGEN_AUDIO_FORMAT`  | Override extraction format used for whisper fallback                           |
 | `SUBMINER_YT_SUBGEN_KEEP_TEMP`     | Set to `1` to keep temporary subtitle-generation workspace                     |

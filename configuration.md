@@ -66,6 +66,7 @@ When these values change, SubMiner applies them live. Invalid config edits are r
 Restart-required changes:
 
 - Any other config sections still require restart.
+- Shared top-level `ai` provider settings still require restart.
 - SubMiner shows an on-screen/system notification listing restart-required sections when they change.
 
 ### Configuration Options Overview
@@ -97,6 +98,7 @@ The configuration file includes several main sections:
 
 **Anki Integration**
 
+- [**Shared AI Provider**](#shared-ai-provider) - Canonical OpenAI-compatible provider config shared by Anki and YouTube subtitle fixing
 - [**AnkiConnect**](#ankiconnect) - Automatic Anki card creation with media
 - [**Kiku/Lapis Integration**](#kiku-lapis-integration) - Sentence cards and duplicate handling for Kiku/Lapis note types
 - [**N+1 Word Highlighting**](#n1-word-highlighting) - Known-word cache and single-target highlighting
@@ -323,7 +325,7 @@ Character-name highlighting is separate from N+1 and frequency highlighting:
 - `nameMatchColor` sets the highlight color for those matched character names.
 - Matches come from the bundled SubMiner character dictionary, including AniList-synced merged dictionaries when enabled.
 
-Secondary subtitle defaults: `fontFamily: "Inter, Noto Sans, Helvetica Neue, sans-serif"`, `fontSize: 24`, `fontColor: "#cad3f5"`, `backgroundColor: "transparent"`. Any property not set in `secondary` falls back to the CSS defaults.
+Secondary subtitle defaults: `fontFamily: "Inter, Noto Sans, Helvetica Neue, sans-serif"`, `fontSize: 24`, `fontColor: "#cad3f5"`, `textShadow: "0 2px 4px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,0.8), 0 0 16px rgba(0,0,0,0.55)"`, `backgroundColor: "rgba(20, 22, 34, 0.78)"`, `fontWeight: "600"`. Any property not set in `secondary` falls back to the CSS defaults.
 
 **See `config.example.jsonc`** for the complete list of subtitle style configuration options.
 
@@ -572,6 +574,39 @@ Palette controls:
 
 ## Anki Integration
 
+### Shared AI Provider
+
+Configure the canonical OpenAI-compatible provider once at top-level `ai`, then opt features into using it.
+
+```json
+{
+  "ai": {
+    "enabled": true,
+    "apiKey": "",
+    "apiKeyCommand": "pass show subminer/ai",
+    "model": "openai/gpt-4o-mini",
+    "baseUrl": "https://openrouter.ai/api",
+    "systemPrompt": "You are a translation engine. Return only the translated text with no explanations.",
+    "requestTimeoutMs": 15000
+  }
+}
+```
+
+| Option             | Values              | Description                                                             |
+| ------------------ | ------------------- | ----------------------------------------------------------------------- |
+| `enabled`          | `true`, `false`     | Enable shared OpenAI-compatible AI provider features (default: `false`) |
+| `apiKey`           | string              | Static API key for the shared provider                                  |
+| `apiKeyCommand`    | string              | Shell command used to resolve the shared provider API key at runtime    |
+| `model`            | string              | Model id for shared AI requests (default: `openai/gpt-4o-mini`)         |
+| `baseUrl`          | string (URL)        | OpenAI-compatible API base URL; accepts with or without `/v1`           |
+| `systemPrompt`     | string              | Default system prompt used by shared AI flows                           |
+| `requestTimeoutMs` | positive integer ms | Request timeout for shared AI calls (default: `15000`)                  |
+
+SubMiner uses the shared provider in two places:
+
+- Anki translation/enrichment when `ankiConnect.ai` is `true`
+- YouTube whisper subtitle post-processing when `youtubeSubgen.fixWithAi` is `true`
+
 ### AnkiConnect
 
 Enable automatic Anki card creation and updates with media generation:
@@ -597,15 +632,7 @@ Enable automatic Anki card creation and updates with media generation:
       "miscInfo": "MiscInfo",
       "translation": "SelectionText"
     },
-    "ai": {
-      "enabled": false,
-      "alwaysUseAiTranslation": false,
-      "apiKey": "",
-      "model": "openai/gpt-4o-mini",
-      "baseUrl": "https://openrouter.ai/api",
-      "targetLanguage": "English",
-      "systemPrompt": "You are a translation engine. Return only the translated text with no explanations."
-    },
+    "ai": true,
     "media": {
       "generateAudio": true,
       "generateImage": true,
@@ -664,13 +691,7 @@ This example is intentionally compact. The option table below documents availabl
 | `fields.sentence`                       | string                                  | Card field for sentences (default: `Sentence`)                                                                                                |
 | `fields.miscInfo`                       | string                                  | Card field for metadata (default: `"MiscInfo"`, set to `null` to disable)                                                                     |
 | `fields.translation`                    | string                                  | Card field for sentence-card translation/back text (default: `SelectionText`)                                                                 |
-| `ai.enabled`                            | `true`, `false`                         | Use AI translation for sentence cards. Also auto-attempted when secondary subtitle is missing.                                                |
-| `ai.alwaysUseAiTranslation`             | `true`, `false`                         | When `true`, always use AI translation even if secondary subtitles exist. When `false`, AI is used only when no secondary subtitle exists.    |
-| `ai.apiKey`                             | string                                  | API key for your OpenAI-compatible endpoint (required for translation).                                                                       |
-| `ai.model`                              | string                                  | Model id for your OpenAI-compatible endpoint (default: `openai/gpt-4o-mini`).                                                                 |
-| `ai.baseUrl`                            | string (URL)                            | OpenAI-compatible API base URL; accepts with or without `/v1`.                                                                                |
-| `ai.targetLanguage`                     | string                                  | Target language name used in translation prompt (default: `English`).                                                                         |
-| `ai.systemPrompt`                       | string                                  | System prompt used for translation (default returns translation text only).                                                                   |
+| `ankiConnect.ai`                        | `true`, `false`                         | Enable shared AI provider usage for Anki translation/enrichment flows. Shared provider settings live under top-level `ai`.                   |
 | `media.generateAudio`                   | `true`, `false`                         | Generate audio clips from video (default: `true`)                                                                                             |
 | `media.generateImage`                   | `true`, `false`                         | Generate image/animation screenshots (default: `true`)                                                                                        |
 | `media.imageType`                       | `"static"`, `"avif"`                    | Image type: static screenshot or animated AVIF (default: `"static"`)                                                                          |
@@ -1051,27 +1072,39 @@ See [Immersion Tracking Storage](/immersion-tracking) for schema details, query 
 
 ### YouTube Subtitle Generation
 
-Set defaults used by the `subminer` launcher for YouTube subtitle extraction/transcription:
+Set defaults used by the `subminer` launcher for YouTube subtitle generation:
 
 ```json
 {
   "youtubeSubgen": {
-    "mode": "automatic",
     "whisperBin": "/path/to/whisper-cli",
     "whisperModel": "/path/to/ggml-model.bin",
+    "whisperVadModel": "/path/to/ggml-vad.bin",
+    "whisperThreads": 4,
+    "fixWithAi": false,
     "primarySubLanguages": ["ja", "jpn"]
   }
 }
 ```
 
-| Option                | Values                                 | Description                                                                                                                                           |
-| --------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mode`                | `"automatic"`, `"preprocess"`, `"off"` | `automatic`: play immediately and load generated subtitles in background; `preprocess`: generate before playback; `off`: disable launcher generation. |
-| `whisperBin`          | string path                            | Path to `whisper.cpp` CLI binary used as fallback transcription engine.                                                                               |
-| `whisperModel`        | string path                            | Path to whisper model used by fallback transcription.                                                                                                 |
-| `primarySubLanguages` | string[]                               | Primary subtitle language priority for YouTube subtitle generation (default `["ja", "jpn"]`).                                                         |
+| Option                | Values           | Description                                                                                    |
+| --------------------- | ---------------- | ---------------------------------------------------------------------------------------------- |
+| `whisperBin`          | string path      | Path to `whisper.cpp` CLI binary used as fallback transcription engine                         |
+| `whisperModel`        | string path      | Path to whisper model used by fallback transcription                                           |
+| `whisperVadModel`     | string path      | Optional whisper VAD model path passed with `-vm/--vad`                                        |
+| `whisperThreads`      | positive integer | Thread count passed to whisper subtitle generation runs (default: `4`)                         |
+| `fixWithAi`           | `true`, `false`  | Use shared AI provider to post-process whisper-generated subtitles                             |
+| `primarySubLanguages` | string[]         | Primary subtitle language priority for YouTube subtitle generation (default `["ja", "jpn"]`)  |
 
-YouTube language targets are derived from subtitle config:
+Launcher behavior:
+
+- For YouTube URLs, subtitle generation now runs before mpv launch.
+- SubMiner probes manual/native YouTube subtitle tracks first.
+- Missing tracks fall back to local `whisper.cpp`.
+- English secondary subtitles can use whisper translate fallback when no manual track exists.
+- If `fixWithAi` is enabled, only whisper-generated `.srt` output is post-processed with the shared top-level `ai` provider.
+
+Language targets are derived from subtitle config:
 
 - primary track: `youtubeSubgen.primarySubLanguages` (falls back to `["ja","jpn"]`)
 - secondary track: `secondarySub.secondarySubLanguages` (falls back to English when empty)

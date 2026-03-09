@@ -167,12 +167,14 @@ If the overlay position is slightly off, right-click and drag on subtitle text t
 
 SubMiner bundles Yomitan and searches for it in these locations (in order):
 
-1. `vendor/yomitan` (relative to executable)
+1. `build/yomitan` (local/source build output)
 2. `<resources>/yomitan` (Electron resources path)
 3. `/usr/share/SubMiner/yomitan`
-4. `~/.config/SubMiner/extensions/yomitan`
+4. `~/.config/SubMiner/yomitan` (user-data fallback on Linux)
 
-If you installed from the AppImage and see this error, the package may be incomplete. Re-download the AppImage or place the Yomitan extension manually in `~/.config/SubMiner/extensions/yomitan`.
+SubMiner does not load the source tree directly from `vendor/subminer-yomitan`; source builds must produce `build/yomitan` first.
+
+If you installed from the AppImage and see this error, the package may be incomplete. Re-download the AppImage or place the unpacked Yomitan extension manually in `~/.config/SubMiner/yomitan`.
 
 **Yomitan popup does not appear when clicking words**
 

@@ -210,28 +210,32 @@ Animated AVIF requires an AV1 encoder (`libaom-av1`, `libsvtav1`, or `librav1e`)
 
 ## AI Translation
 
-SubMiner can auto-translate the mined sentence and fill the translation field. By default, if a secondary subtitle track is available, its text is used. When AI is enabled, SubMiner calls an LLM API instead.
+SubMiner can auto-translate the mined sentence and fill the translation field. Secondary subtitle text still wins when present. AI translation is only attempted when `ankiConnect.ai` is enabled and no secondary subtitle exists.
 
 ```jsonc
+"ai": {
+  "enabled": true,
+  "apiKey": "sk-...",
+  "apiKeyCommand": "",
+  "model": "openai/gpt-4o-mini",
+  "baseUrl": "https://openrouter.ai/api",
+  "systemPrompt": "You are a translation engine. Return only the translation.",
+  "requestTimeoutMs": 15000
+},
 "ankiConnect": {
-  "ai": {
-    "enabled": true,
-    "alwaysUseAiTranslation": false,  // true = ignore secondary sub
-    "apiKey": "sk-...",
-    "model": "openai/gpt-4o-mini",
-    "baseUrl": "https://openrouter.ai/api",
-    "targetLanguage": "English",
-    "systemPrompt": "You are a translation engine. Return only the translation."
-  }
+  "ai": true
 }
 ```
 
+`ankiConnect.ai` is just the feature toggle. Provider credentials and request settings now live in top-level `ai`.
+
 Translation priority:
 
-1. If `alwaysUseAiTranslation` is `true`, always call the AI API.
-2. If a secondary subtitle is available, use it as the translation.
-3. If AI is enabled and no secondary subtitle exists, call the AI API.
-4. Otherwise, leave the field empty.
+1. If a secondary subtitle is available, use it as the translation.
+2. If `ankiConnect.ai` is `true` and top-level `ai.enabled` is `true`, call the AI API.
+3. If AI translation fails and no secondary subtitle exists, fall back to the original sentence text.
+
+The built-in translation request currently asks for English output. Customize that behavior through `ai.systemPrompt` if you need a different target style.
 
 ## Sentence Cards (Lapis)
 
@@ -325,13 +329,7 @@ When you mine the same word multiple times, SubMiner can merge the cards instead
       "autoUpdateNewCards": true,
       "notificationType": "osd",
     },
-    "ai": {
-      "enabled": false,
-      "apiKey": "",
-      "model": "openai/gpt-4o-mini",
-      "baseUrl": "https://openrouter.ai/api",
-      "targetLanguage": "English",
-    },
+    "ai": true,
     "isKiku": {
       "enabled": false,
       "fieldGrouping": "disabled",
@@ -341,6 +339,15 @@ When you mine the same word multiple times, SubMiner can merge the cards instead
       "enabled": false,
       "sentenceCardModel": "Japanese sentences",
     },
+  },
+  "ai": {
+    "enabled": true,
+    "apiKey": "",
+    "apiKeyCommand": "",
+    "model": "openai/gpt-4o-mini",
+    "baseUrl": "https://openrouter.ai/api",
+    "systemPrompt": "You are a translation engine. Return only the translated text with no explanations.",
+    "requestTimeoutMs": 15000,
   },
 }
 ```

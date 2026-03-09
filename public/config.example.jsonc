@@ -185,18 +185,33 @@
       "wordSpacing": 0, // Word spacing setting.
       "fontKerning": "normal", // Font kerning setting.
       "textRendering": "geometricPrecision", // Text rendering setting.
-      "textShadow": "0 3px 10px rgba(0,0,0,0.69)", // Text shadow setting.
-      "backgroundColor": "transparent", // Background color setting.
+      "textShadow": "0 2px 4px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,0.8), 0 0 16px rgba(0,0,0,0.55)", // Text shadow setting.
+      "backgroundColor": "rgba(20, 22, 34, 0.78)", // Background color setting.
       "backdropFilter": "blur(6px)", // Backdrop filter setting.
-      "fontWeight": "normal", // Font weight setting.
+      "fontWeight": "600", // Font weight setting.
       "fontStyle": "normal" // Font style setting.
     } // Secondary setting.
   }, // Primary and secondary subtitle styling.
 
   // ==========================================
+  // Shared AI Provider
+  // Canonical OpenAI-compatible provider settings shared by Anki and YouTube subtitle fixing.
+  // ==========================================
+  "ai": {
+    "enabled": false, // Enable shared OpenAI-compatible AI provider features. Values: true | false
+    "apiKey": "", // Static API key for the shared OpenAI-compatible AI provider.
+    "apiKeyCommand": "", // Shell command used to resolve the shared AI provider API key.
+    "model": "openai/gpt-4o-mini", // Model name used for shared AI provider requests.
+    "baseUrl": "https://openrouter.ai/api", // Base URL for the shared OpenAI-compatible AI provider.
+    "systemPrompt": "You are a translation engine. Return only the translated text with no explanations.", // Default system prompt used by shared AI provider flows.
+    "requestTimeoutMs": 15000 // Timeout in milliseconds for shared AI provider requests.
+  }, // Canonical OpenAI-compatible provider settings shared by Anki and YouTube subtitle fixing.
+
+  // ==========================================
   // AnkiConnect Integration
   // Automatic Anki updates and media generation options.
-  // Hot-reload: AI translation settings update live while SubMiner is running.
+  // Hot-reload: ankiConnect.ai feature toggle updates live while SubMiner is running.
+  // Shared ai provider settings are read from top-level ai and typically require restart.
   // Most other AnkiConnect settings still require restart.
   // ==========================================
   "ankiConnect": {
@@ -219,15 +234,7 @@
       "miscInfo": "MiscInfo", // Misc info setting.
       "translation": "SelectionText" // Translation setting.
     }, // Fields setting.
-    "ai": {
-      "enabled": false, // Enabled setting. Values: true | false
-      "alwaysUseAiTranslation": false, // Always use ai translation setting. Values: true | false
-      "apiKey": "", // Api key setting.
-      "model": "openai/gpt-4o-mini", // Model setting.
-      "baseUrl": "https://openrouter.ai/api", // Base url setting.
-      "targetLanguage": "English", // Target language setting.
-      "systemPrompt": "You are a translation engine. Return only the translated text with no explanations." // System prompt setting.
-    }, // Ai setting.
+    "ai": false, // Enable shared AI provider usage for Anki translation/enrichment flows. Values: true | false
     "media": {
       "generateAudio": true, // Generate audio setting. Values: true | false
       "generateImage": true, // Generate image setting. Values: true | false
@@ -284,17 +291,19 @@
 
   // ==========================================
   // YouTube Subtitle Generation
-  // Defaults for subminer YouTube subtitle extraction/transcription mode.
+  // Defaults for SubMiner YouTube subtitle generation.
   // ==========================================
   "youtubeSubgen": {
-    "mode": "automatic", // YouTube subtitle generation mode for the launcher script. Values: automatic | preprocess | off
     "whisperBin": "", // Path to whisper.cpp CLI used as fallback transcription engine.
     "whisperModel": "", // Path to whisper model used for fallback transcription.
+    "whisperVadModel": "", // Path to optional whisper VAD model used for subtitle generation.
+    "whisperThreads": 4, // Thread count passed to whisper.cpp subtitle generation runs.
+    "fixWithAi": false, // Use shared AI provider to post-process whisper-generated YouTube subtitles. Values: true | false
     "primarySubLanguages": [
       "ja",
       "jpn"
     ] // Comma-separated primary subtitle language priority used by the launcher.
-  }, // Defaults for subminer YouTube subtitle extraction/transcription mode.
+  }, // Defaults for SubMiner YouTube subtitle generation.
 
   // ==========================================
   // Anilist
