@@ -12,29 +12,27 @@ cd SubMiner
 # if you cloned without --recurse-submodules:
 git submodule update --init --recursive
 
-make deps
-# or manually:
 bun install
 (cd vendor/texthooker-ui && bun install --frozen-lockfile)
 ```
 
+`make deps` is still available as a convenience wrapper around the same dependency install flow.
+
 ## Building
 
 ```bash
-# TypeScript compile (fast, for development)
+# Main app build
 bun run build
 
-# Generate launcher wrapper artifact
+# Platform packages
+bun run build:appimage      # Linux AppImage
+bun run build:mac           # macOS DMG + ZIP (signed)
+bun run build:mac:unsigned  # macOS DMG + ZIP (unsigned)
+bun run build:win           # Windows NSIS installer + ZIP
+
+# Optional launcher artifact only
 make build-launcher
 # output: dist/launcher/subminer
-
-# Full platform build (includes texthooker-ui + AppImage/DMG)
-make build
-
-# Platform-specific builds
-make build-linux          # Linux AppImage
-make build-macos          # macOS DMG + ZIP (signed)
-make build-macos-unsigned # macOS DMG + ZIP (unsigned)
 ```
 
 `bun run build` includes the Yomitan build step. It builds the bundled Chrome extension directly from the `vendor/subminer-yomitan` submodule into `build/yomitan` using Bun.
@@ -108,7 +106,7 @@ bun run test:smoke:dist
 If you changed docs in the sibling docs repo, also run:
 
 ```bash
-(cd ../subminer-docs && bun run docs:build)
+(cd ../subminer-docs && bun test)
 ```
 
 Focused commands:
@@ -152,17 +150,20 @@ bun run format:check:src
 - `make pretty` runs the maintained Prettier allowlist only (`format:src`).
 - `bun run format:check:src` checks the same scoped set without writing changes.
 - `bun run format` remains the broad repo-wide Prettier command; use it intentionally.
-
 ## Config Generation
 
 ```bash
-# Generate default config to ~/.config/SubMiner/config.jsonc
-make generate-config
+# Generate default config to ~/.config/SubMiner/config.jsonc (or %APPDATA%\SubMiner\config.jsonc on Windows)
+bun run electron . --generate-config
 
 # Regenerate the repo's config.example.jsonc from centralized defaults
-make generate-example-config
-# or: bun run generate:config-example
+bun run generate:config-example
 ```
+
+Convenience wrappers still exist:
+
+- `make generate-config`
+- `make generate-example-config`
 
 ## Documentation Site
 
@@ -174,7 +175,6 @@ From the SubMiner app repo:
 cd ../subminer-docs
 bun install
 bun run docs:dev     # Dev server at http://localhost:5173
-bun run docs:build   # Build static output
 bun run docs:preview # Preview built site at http://localhost:4173
 ```
 
@@ -191,6 +191,9 @@ Run `make help` for a full list of targets. Key ones:
 | `make deps`            | Install JS dependencies (root + texthooker-ui)                   |
 | `make pretty`          | Run scoped Prettier formatting for maintained source/config files |
 | `make generate-config` | Generate default config from centralized registry                |
+| `make build-linux`     | Convenience wrapper for Linux packaging                          |
+| `make build-macos`     | Convenience wrapper for signed macOS packaging                   |
+| `make build-macos-unsigned` | Convenience wrapper for unsigned macOS packaging            |
 
 ## Contributor Notes
 

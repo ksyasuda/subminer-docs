@@ -80,7 +80,7 @@ subminer dictionary /path/to/file-or-directory  # Generate character dictionary 
 subminer texthooker               # Launch texthooker-only mode
 subminer app --anilist            # Pass args directly to SubMiner binary (example: AniList login flow)
 subminer yt -o ~/subs https://youtu.be/...  # YouTube subcommand: output directory shortcut
-subminer yt --whisper-bin /path/to/whisper-cli --whisper-model /path/to/model.bin --whisper-vad-model /path/to/vad.bin https://youtu.be/...  # Override whisper fallback paths
+subminer yt --keep-temp --whisper-bin /path/to/whisper-cli --whisper-model /path/to/model.bin --whisper-vad-model /path/to/ggml-vad.bin https://youtu.be/...  # Keep generated subtitle workspace for debugging
 
 # Direct packaged app control
 SubMiner.AppImage --background             # Start in background (tray + IPC wait, minimal logs)
@@ -138,7 +138,7 @@ This flow requires `mpv.exe` to be on `PATH`. If it is installed elsewhere, set 
 ### Launcher Subcommands
 
 - `subminer jellyfin` / `subminer jf`: Jellyfin-focused workflow aliases.
-- `subminer yt` / `subminer youtube`: YouTube-focused shorthand flags (`-o`, `-m`).
+- `subminer yt` / `subminer youtube`: YouTube-focused shorthand flags (`-o`, `--keep-temp`, `--whisper-*`).
 - `subminer doctor`: health checks for core dependencies and runtime paths.
 - `subminer config`: config helpers (`path`, `show`).
 - `subminer mpv`: mpv helpers (`status`, `socket`, `idle`).
@@ -160,8 +160,12 @@ SubMiner.AppImage --setup
 
 Setup flow:
 
-- plugin status: install (or skip) the bundled mpv plugin
+- config file: create the default config directory and prefer `config.jsonc`
+- plugin status: install or skip the bundled mpv plugin
+- Yomitan shortcut: open bundled Yomitan settings directly from the setup window
 - dictionary check: ensure at least one bundled Yomitan dictionary is available
+- Windows: optionally create or remove `SubMiner mpv` Start Menu/Desktop shortcuts (`SubMiner.exe --launch-mpv`)
+- refresh: re-check plugin + dictionary state without restarting
 - `Finish setup` stays disabled until dictionary availability is detected
 - finish action writes setup completion state and suppresses future auto-open prompts
 
@@ -220,7 +224,8 @@ If you also use Yomitan in a browser, configure that browser profile separately;
 
 ### YouTube Playback
 
-`subminer` accepts direct URLs (for example, YouTube links) and `ytsearch:` targets, and forwards them to mpv.
+`subminer` accepts direct URLs (for example, YouTube links) and `ytsearch:` targets.
+For YouTube playback, SubMiner now generates or downloads subtitle tracks before mpv starts, then launches mpv with the resolved subtitle files attached.
 
 Notes:
 
@@ -230,8 +235,16 @@ Notes:
 - Primary subtitle target languages come from `youtubeSubgen.primarySubLanguages` (defaults to `["ja","jpn"]`).
 - Secondary target languages come from `secondarySub.secondarySubLanguages` (defaults to English if unset).
 - Whisper translation fallback currently only supports English secondary targets; non-English secondary targets rely on native/manual subtitle availability.
-- `youtubeSubgen.fixWithAi` can post-process whisper-generated `.srt` output with the shared top-level `ai` provider.
-- Configure defaults in `$XDG_CONFIG_HOME/SubMiner/config.jsonc` (or `~/.config/SubMiner/config.jsonc`) under `youtubeSubgen`, `secondarySub`, and top-level `ai`, or override whisper paths via CLI flags/environment variables.
+- Optional AI cleanup for whisper-generated subtitles is controlled by `youtubeSubgen.fixWithAi` plus the shared top-level `ai` config (with optional `youtubeSubgen.ai` overrides).
+- Configure defaults in `$XDG_CONFIG_HOME/SubMiner/config.jsonc` (or `~/.config/SubMiner/config.jsonc`) under `youtubeSubgen`, `secondarySub`, and `ai`.
+- CLI overrides are available through `subminer yt` / `subminer youtube`:
+  - `-o, --out-dir`
+  - `--keep-temp`
+  - `--whisper-bin`
+  - `--whisper-model`
+  - `--whisper-vad-model`
+  - `--whisper-threads`
+  - `--yt-subgen-audio-format`
 
 ## Keybindings
 

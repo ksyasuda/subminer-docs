@@ -64,15 +64,15 @@ cd SubMiner
 # if you cloned without --recurse-submodules:
 git submodule update --init --recursive
 
-make build
-make build-launcher
+bun install
+bun run build
 
-# Install platform artifacts (wrapper + theme + AppImage)
-make install
+# Optional packaged Linux artifact
+bun run build:appimage
 ```
 
-`make build-launcher` generates the wrapper at `dist/launcher/subminer`. The checked-in launcher source remains `launcher/*.ts`.
-Do not use a repo-root `./subminer` artifact when building from source; workflow checks enforce `dist/launcher/subminer` as the only generated path.
+Bundled Yomitan is built during `bun run build`.
+If you prefer Make wrappers for local install flows, `make build-launcher` still generates `dist/launcher/subminer` and `make install` still installs the wrapper/theme/AppImage when those artifacts exist.
 
 `make build` also builds the bundled Yomitan Chrome extension from the `vendor/subminer-yomitan` submodule into `build/yomitan` using Bun.
 
@@ -155,9 +155,26 @@ Install `mpv` separately and ensure `mpv.exe` is on `PATH`. `ffmpeg` is still re
 
 ### Windows Usage Notes
 
-- Launch `SubMiner.exe` once to let the first-run setup flow create config/state and offer mpv plugin installation.
+- Launch `SubMiner.exe` once to let the first-run setup flow seed `%APPDATA%\\SubMiner\\config.jsonc`, offer mpv plugin installation, open bundled Yomitan settings, and optionally create `SubMiner mpv` Start Menu/Desktop shortcuts.
 - If you use the mpv plugin, leave `binary_path` empty unless SubMiner is installed in a non-standard location.
+- Windows plugin installs rewrite `socket_path` to `\\.\pipe\subminer-socket`; do not keep `/tmp/subminer-socket` on Windows.
 - Native window tracking is built in on Windows; no `xdotool`, `xwininfo`, or compositor-specific helper is required.
+
+### From Source (Windows)
+
+```powershell
+git clone https://github.com/ksyasuda/SubMiner.git
+cd SubMiner
+bun install
+Set-Location vendor/texthooker-ui
+bun install --frozen-lockfile
+bun run build
+Set-Location ../..
+bun run build:win
+```
+
+Windows installer builds already get the required NSIS `WinShell` helper through electron-builder's cached `nsis-resources` bundle.
+No extra repo-local WinShell plugin install step is required.
 
 ## MPV Plugin (Recommended)
 
@@ -166,6 +183,8 @@ The Lua plugin provides in-player keybindings to control the overlay from mpv. I
 ::: warning Important
 mpv must be launched with `--input-ipc-server=/tmp/subminer-socket` for SubMiner to connect.
 :::
+
+On Windows, the packaged plugin config is rewritten to `socket_path=\\.\pipe\subminer-socket`.
 
 ```bash
 # Option 1: install from release assets bundle

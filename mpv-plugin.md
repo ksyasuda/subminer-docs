@@ -25,6 +25,12 @@ mpv must have IPC enabled for SubMiner to connect:
 input-ipc-server=/tmp/subminer-socket
 ```
 
+On Windows, use a named pipe instead:
+
+```ini
+input-ipc-server=\\.\pipe\subminer-socket
+```
+
 ## Keybindings
 
 All keybindings use a `y` chord prefix — press `y`, then the second key:
@@ -164,6 +170,8 @@ When `binary_path` is empty, the plugin searches platform-specific locations:
 1. `C:\Program Files\SubMiner\SubMiner.exe`
 2. `C:\Program Files (x86)\SubMiner\SubMiner.exe`
 3. `C:\SubMiner\SubMiner.exe`
+
+Packaged Windows plugin installs also rewrite `socket_path` to `\\.\pipe\subminer-socket` automatically.
 
 ## Backend Detection
 
