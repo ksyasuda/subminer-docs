@@ -5,6 +5,8 @@ outline: [2, 3]
 # Configuration
 
 Settings are stored in `$XDG_CONFIG_HOME/SubMiner/config.jsonc` (or `~/.config/SubMiner/config.jsonc` when `XDG_CONFIG_HOME` is unset).
+On Windows, the default path is `%APPDATA%\SubMiner\config.jsonc`.
+When both files exist, SubMiner prefers `config.jsonc` over `config.json`.
 
 ## Quick Start
 
@@ -42,6 +44,7 @@ SubMiner.AppImage --generate-config --backup-overwrite
 - JSONC config supports comments and trailing commas.
 - If the target file exists, SubMiner prompts to create a timestamped backup and overwrite.
 - In non-interactive shells, use `--backup-overwrite` to explicitly back up and overwrite.
+- On Windows, generated configs default to `%APPDATA%\SubMiner\config.jsonc`.
 
 Malformed config syntax (invalid JSON/JSONC) is startup-blocking: SubMiner shows a clear parse error with the config path and asks you to fix the file and restart.
 
@@ -154,6 +157,8 @@ Current plugin defaults in `subminer.conf` are:
 - `auto_start=yes`
 - `auto_start_visible_overlay=yes`
 - `auto_start_pause_until_ready=yes`
+
+On Windows, packaged plugin installs also rewrite the plugin socket path to `\\.\pipe\subminer-socket`.
 
 ### Startup Warmups
 
@@ -576,35 +581,32 @@ Palette controls:
 
 ### Shared AI Provider
 
-Configure the canonical OpenAI-compatible provider once at top-level `ai`, then opt features into using it.
+Shared OpenAI-compatible transport settings live at the top level under `ai`.
+Anki and YouTube subtitle cleanup both read this provider, then apply feature-local overrides where supported.
 
 ```json
 {
   "ai": {
-    "enabled": true,
+    "enabled": false,
     "apiKey": "",
-    "apiKeyCommand": "pass show subminer/ai",
-    "model": "openai/gpt-4o-mini",
+    "apiKeyCommand": "",
     "baseUrl": "https://openrouter.ai/api",
-    "systemPrompt": "You are a translation engine. Return only the translated text with no explanations.",
     "requestTimeoutMs": 15000
   }
 }
 ```
 
-| Option             | Values              | Description                                                             |
-| ------------------ | ------------------- | ----------------------------------------------------------------------- |
-| `enabled`          | `true`, `false`     | Enable shared OpenAI-compatible AI provider features (default: `false`) |
-| `apiKey`           | string              | Static API key for the shared provider                                  |
-| `apiKeyCommand`    | string              | Shell command used to resolve the shared provider API key at runtime    |
-| `model`            | string              | Model id for shared AI requests (default: `openai/gpt-4o-mini`)         |
-| `baseUrl`          | string (URL)        | OpenAI-compatible API base URL; accepts with or without `/v1`           |
-| `systemPrompt`     | string              | Default system prompt used by shared AI flows                           |
-| `requestTimeoutMs` | positive integer ms | Request timeout for shared AI calls (default: `15000`)                  |
+| Option             | Values                | Description                                          |
+| ------------------ | --------------------- | ---------------------------------------------------- |
+| `enabled`          | `true`, `false`       | Enable shared AI provider features                   |
+| `apiKey`           | string                | Static API key for the shared provider               |
+| `apiKeyCommand`    | string                | Shell command used to resolve the API key            |
+| `baseUrl`          | string (URL)          | OpenAI-compatible base URL                           |
+| `requestTimeoutMs` | integer milliseconds  | Shared request timeout (default: `15000`)            |
 
 SubMiner uses the shared provider in two places:
 
-- Anki translation/enrichment when `ankiConnect.ai` is `true`
+- Anki translation/enrichment when `ankiConnect.ai.enabled` is `true`
 - YouTube whisper subtitle post-processing when `youtubeSubgen.fixWithAi` is `true`
 
 ### AnkiConnect
@@ -632,7 +634,11 @@ Enable automatic Anki card creation and updates with media generation:
       "miscInfo": "MiscInfo",
       "translation": "SelectionText"
     },
-    "ai": true,
+    "ai": {
+      "enabled": false,
+      "model": "openai/gpt-4o-mini",
+      "systemPrompt": "Translate mined sentence text only."
+    },
     "media": {
       "generateAudio": true,
       "generateImage": true,
@@ -691,7 +697,9 @@ This example is intentionally compact. The option table below documents availabl
 | `fields.sentence`                       | string                                  | Card field for sentences (default: `Sentence`)                                                                                                |
 | `fields.miscInfo`                       | string                                  | Card field for metadata (default: `"MiscInfo"`, set to `null` to disable)                                                                     |
 | `fields.translation`                    | string                                  | Card field for sentence-card translation/back text (default: `SelectionText`)                                                                 |
-| `ankiConnect.ai`                        | `true`, `false`                         | Enable shared AI provider usage for Anki translation/enrichment flows. Shared provider settings live under top-level `ai`.                   |
+| `ankiConnect.ai.enabled`                | `true`, `false`                         | Use AI translation for sentence cards. Also auto-attempted when secondary subtitle is missing.                                                |
+| `ankiConnect.ai.model`                  | string                                  | Optional model override for Anki AI translation/enrichment flows.                                                                              |
+| `ankiConnect.ai.systemPrompt`           | string                                  | Optional system prompt override for Anki AI translation/enrichment flows.                                                                      |
 | `media.generateAudio`                   | `true`, `false`                         | Generate audio clips from video (default: `true`)                                                                                             |
 | `media.generateImage`                   | `true`, `false`                         | Generate image/animation screenshots (default: `true`)                                                                                        |
 | `media.imageType`                       | `"static"`, `"avif"`                    | Image type: static screenshot or animated AVIF (default: `"static"`)                                                                          |
@@ -722,6 +730,9 @@ This example is intentionally compact. The option table below documents availabl
 | `metadata.pattern`                      | string                                  | Format pattern for metadata: `%f`=filename, `%F`=filename+ext, `%t`=time                                                                      |
 | `isLapis`                               | object                                  | Lapis/shared sentence-card config: `{ enabled, sentenceCardModel }`. Sentence/audio field names are fixed to `Sentence` and `SentenceAudio`.  |
 | `isKiku`                                | object                                  | Kiku-only config: `{ enabled, fieldGrouping, deleteDuplicateInAuto }` (shared sentence/audio/model settings are inherited from `isLapis`)     |
+
+`ankiConnect.ai` only controls feature-local enablement plus optional `model` / `systemPrompt` overrides.
+API key resolution, base URL, and timeout live under the shared top-level [`ai`](#shared-ai-provider) config.
 
 ### Kiku/Lapis Integration
 
@@ -1082,19 +1093,25 @@ Set defaults used by the `subminer` launcher for YouTube subtitle generation:
     "whisperVadModel": "/path/to/ggml-vad.bin",
     "whisperThreads": 4,
     "fixWithAi": false,
+    "ai": {
+      "model": "openai/gpt-4o-mini",
+      "systemPrompt": "Fix subtitle mistakes only."
+    },
     "primarySubLanguages": ["ja", "jpn"]
   }
 }
 ```
 
-| Option                | Values           | Description                                                                                    |
-| --------------------- | ---------------- | ---------------------------------------------------------------------------------------------- |
-| `whisperBin`          | string path      | Path to `whisper.cpp` CLI binary used as fallback transcription engine                         |
-| `whisperModel`        | string path      | Path to whisper model used by fallback transcription                                           |
-| `whisperVadModel`     | string path      | Optional whisper VAD model path passed with `-vm/--vad`                                        |
-| `whisperThreads`      | positive integer | Thread count passed to whisper subtitle generation runs (default: `4`)                         |
-| `fixWithAi`           | `true`, `false`  | Use shared AI provider to post-process whisper-generated subtitles                             |
-| `primarySubLanguages` | string[]         | Primary subtitle language priority for YouTube subtitle generation (default `["ja", "jpn"]`)  |
+| Option                | Values               | Description                                                                                    |
+| --------------------- | -------------------- | ---------------------------------------------------------------------------------------------- |
+| `whisperBin`          | string path          | Path to `whisper.cpp` CLI binary used as fallback transcription engine                        |
+| `whisperModel`        | string path          | Path to whisper model used by fallback transcription                                          |
+| `whisperVadModel`     | string path          | Optional whisper VAD model path                                                               |
+| `whisperThreads`      | integer              | Thread count passed to whisper runs                                                           |
+| `fixWithAi`           | `true`, `false`      | Run shared AI post-processing on whisper-generated subtitles                                  |
+| `ai.model`            | string               | Optional model override for YouTube AI subtitle cleanup                                       |
+| `ai.systemPrompt`     | string               | Optional system prompt override for YouTube AI subtitle cleanup                               |
+| `primarySubLanguages` | string[]             | Primary subtitle language priority for YouTube subtitle generation (default `["ja", "jpn"]`) |
 
 Launcher behavior:
 
@@ -1108,5 +1125,6 @@ Language targets are derived from subtitle config:
 
 - primary track: `youtubeSubgen.primarySubLanguages` (falls back to `["ja","jpn"]`)
 - secondary track: `secondarySub.secondarySubLanguages` (falls back to English when empty)
+- Subtitle files are generated or downloaded before mpv starts; the older launcher mode switch has been removed.
 
 Precedence for launcher defaults is: CLI flag > environment variable > `config.jsonc` > built-in default.

@@ -195,23 +195,21 @@
 
   // ==========================================
   // Shared AI Provider
-  // Canonical OpenAI-compatible provider settings shared by Anki and YouTube subtitle fixing.
+  // Canonical OpenAI-compatible provider transport settings shared by Anki and YouTube subtitle fixing.
   // ==========================================
   "ai": {
     "enabled": false, // Enable shared OpenAI-compatible AI provider features. Values: true | false
     "apiKey": "", // Static API key for the shared OpenAI-compatible AI provider.
     "apiKeyCommand": "", // Shell command used to resolve the shared AI provider API key.
-    "model": "openai/gpt-4o-mini", // Model name used for shared AI provider requests.
     "baseUrl": "https://openrouter.ai/api", // Base URL for the shared OpenAI-compatible AI provider.
-    "systemPrompt": "You are a translation engine. Return only the translated text with no explanations.", // Default system prompt used by shared AI provider flows.
     "requestTimeoutMs": 15000 // Timeout in milliseconds for shared AI provider requests.
-  }, // Canonical OpenAI-compatible provider settings shared by Anki and YouTube subtitle fixing.
+  }, // Canonical OpenAI-compatible provider transport settings shared by Anki and YouTube subtitle fixing.
 
   // ==========================================
   // AnkiConnect Integration
   // Automatic Anki updates and media generation options.
-  // Hot-reload: ankiConnect.ai feature toggle updates live while SubMiner is running.
-  // Shared ai provider settings are read from top-level ai and typically require restart.
+  // Hot-reload: ankiConnect.ai.enabled updates live while SubMiner is running.
+  // Shared AI provider transport settings are read from top-level ai and typically require restart.
   // Most other AnkiConnect settings still require restart.
   // ==========================================
   "ankiConnect": {
@@ -234,7 +232,11 @@
       "miscInfo": "MiscInfo", // Misc info setting.
       "translation": "SelectionText" // Translation setting.
     }, // Fields setting.
-    "ai": false, // Enable shared AI provider usage for Anki translation/enrichment flows. Values: true | false
+    "ai": {
+      "enabled": false, // Enable AI provider usage for Anki translation/enrichment flows. Values: true | false
+      "model": "", // Optional model override for Anki AI translation/enrichment flows.
+      "systemPrompt": "" // Optional system prompt override for Anki AI translation/enrichment flows.
+    }, // Ai setting.
     "media": {
       "generateAudio": true, // Generate audio setting. Values: true | false
       "generateImage": true, // Generate image setting. Values: true | false
@@ -299,6 +301,10 @@
     "whisperVadModel": "", // Path to optional whisper VAD model used for subtitle generation.
     "whisperThreads": 4, // Thread count passed to whisper.cpp subtitle generation runs.
     "fixWithAi": false, // Use shared AI provider to post-process whisper-generated YouTube subtitles. Values: true | false
+    "ai": {
+      "model": "", // Optional model override for YouTube subtitle AI post-processing.
+      "systemPrompt": "" // Optional system prompt override for YouTube subtitle AI post-processing.
+    }, // Ai setting.
     "primarySubLanguages": [
       "ja",
       "jpn"

@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.5.1 (2026-03-09)
+- Removed the old YouTube subtitle-generation mode switch; YouTube playback now resolves subtitles before mpv starts.
+- Hardened YouTube AI subtitle fixing so fenced/text-only responses keep original cue timing.
+- Skipped AniSkip during URL/YouTube playback where anime metadata cannot be resolved reliably.
+- Kept the background SubMiner process warm across launcher-managed mpv exits so reconnects do not repeat startup pause/warmup work.
+- Fixed Windows single-instance reuse so overlay and video launches reuse the running background app instead of booting a second full app.
+- Hardened the Windows signing/release workflow with SignPath retry handling for signed `.exe` and `.zip` artifacts.
+
+## v0.5.0 (2026-03-08)
+- Added the initial packaged Windows release.
+- Added Windows-native mpv window tracking, launcher/runtime plumbing, and packaged helper assets.
+- Improved close behavior so ending playback hides the visible overlay while the background app stays running.
+- Limited the native overlay outline/debug frame to debug mode on Windows.
+
 ## v0.3.0 (2026-03-05)
 - Added keyboard-driven Yomitan navigation and popup controls, including optional auto-pause.
 - Added subtitle/jump keyboard handling fixes for smoother subtitle playback control.

@@ -210,32 +210,36 @@ Animated AVIF requires an AV1 encoder (`libaom-av1`, `libsvtav1`, or `librav1e`)
 
 ## AI Translation
 
-SubMiner can auto-translate the mined sentence and fill the translation field. Secondary subtitle text still wins when present. AI translation is only attempted when `ankiConnect.ai` is enabled and no secondary subtitle exists.
+SubMiner can auto-translate the mined sentence and fill the translation field.
+Secondary subtitle text still wins when present. AI translation is only attempted when `ankiConnect.ai.enabled` is `true` and no secondary subtitle exists.
 
 ```jsonc
 "ai": {
   "enabled": true,
   "apiKey": "sk-...",
   "apiKeyCommand": "",
-  "model": "openai/gpt-4o-mini",
   "baseUrl": "https://openrouter.ai/api",
-  "systemPrompt": "You are a translation engine. Return only the translation.",
   "requestTimeoutMs": 15000
 },
 "ankiConnect": {
-  "ai": true
+  "ai": {
+    "enabled": true,
+    "model": "openai/gpt-4o-mini",
+    "systemPrompt": "Translate mined sentence text only."
+  }
 }
 ```
 
-`ankiConnect.ai` is just the feature toggle. Provider credentials and request settings now live in top-level `ai`.
+`ankiConnect.ai` controls feature-local enablement plus optional `model` / `systemPrompt` overrides.
+Provider credentials and request transport settings live in top-level `ai`.
 
 Translation priority:
 
 1. If a secondary subtitle is available, use it as the translation.
-2. If `ankiConnect.ai` is `true` and top-level `ai.enabled` is `true`, call the AI API.
+2. If `ankiConnect.ai.enabled` is `true` and top-level `ai.enabled` is `true`, call the shared AI provider.
 3. If AI translation fails and no secondary subtitle exists, fall back to the original sentence text.
 
-The built-in translation request currently asks for English output. Customize that behavior through `ai.systemPrompt` if you need a different target style.
+The built-in translation request asks for English output by default. Customize that behavior through `ankiConnect.ai.systemPrompt`.
 
 ## Sentence Cards (Lapis)
 
@@ -329,7 +333,11 @@ When you mine the same word multiple times, SubMiner can merge the cards instead
       "autoUpdateNewCards": true,
       "notificationType": "osd",
     },
-    "ai": true,
+    "ai": {
+      "enabled": false,
+      "model": "openai/gpt-4o-mini",
+      "systemPrompt": "Translate mined sentence text only.",
+    },
     "isKiku": {
       "enabled": false,
       "fieldGrouping": "disabled",
@@ -341,12 +349,10 @@ When you mine the same word multiple times, SubMiner can merge the cards instead
     },
   },
   "ai": {
-    "enabled": true,
+    "enabled": false,
     "apiKey": "",
     "apiKeyCommand": "",
-    "model": "openai/gpt-4o-mini",
     "baseUrl": "https://openrouter.ai/api",
-    "systemPrompt": "You are a translation engine. Return only the translated text with no explanations.",
     "requestTimeoutMs": 15000,
   },
 }
