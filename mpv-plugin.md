@@ -43,8 +43,18 @@ All keybindings use a `y` chord prefix — press `y`, then the second key:
 | `y-t` | Toggle visible overlay |
 | `y-o` | Open settings window   |
 | `y-r` | Restart overlay        |
-| `y-c` | Check status           |
 | `y-k` | Skip intro (AniSkip)   |
+
+## Controller Controls
+
+Once the visible overlay has focus, controller chords are available there:
+
+| Chord | Action                                                      |
+| ----- | ----------------------------------------------------------- |
+| `y-c` | Open the controller picker and save the selected controller |
+| `y-C` | Toggle the raw controller debug HUD                         |
+
+Inside keyboard-only mode, D-pad left/right and the left stick move token selection. While the Yomitan popup is open, `L1` / `R1` cycle lookup audio sources and `R2` plays the current lookup audio.
 
 ## Menu
 
@@ -57,7 +67,6 @@ SubMiner:
 3. Toggle overlay
 4. Open options
 5. Restart overlay
-6. Check status
 ```
 
 Select an item by pressing its number.
@@ -194,7 +203,6 @@ script-message subminer-toggle
 script-message subminer-menu
 script-message subminer-options
 script-message subminer-restart
-script-message subminer-status
 script-message subminer-autoplay-ready
 script-message subminer-aniskip-refresh
 script-message subminer-skip-intro

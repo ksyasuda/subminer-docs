@@ -217,7 +217,18 @@ cp /tmp/assets/themes/subminer.rasi ~/.local/share/SubMiner/themes/subminer.rasi
 
 Override with `SUBMINER_ROFI_THEME=/absolute/path/to/theme.rasi`.
 
-See [MPV Plugin](/mpv-plugin) for the full configuration reference, keybindings, script messages, and binary auto-detection details.
+All keybindings use a `y` chord prefix — press `y`, then the second key:
+
+| Chord | Action                                |
+| ----- | ------------------------------------- |
+| `y-y` | Open SubMiner menu (fuzzy-searchable) |
+| `y-s` | Start overlay                         |
+| `y-S` | Stop overlay                          |
+| `y-t` | Toggle visible overlay                |
+| `y-o` | Open Yomitan settings                 |
+| `y-r` | Restart overlay                       |
+
+See [MPV Plugin](/mpv-plugin) for the full configuration reference, script messages, and binary auto-detection details.
 
 ## Verify Installation
 

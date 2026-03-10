@@ -81,9 +81,30 @@ When the mpv plugin is installed, all commands use a `y` chord prefix — press 
 | `y-t` | Toggle visible overlay   |
 | `y-o` | Open Yomitan settings    |
 | `y-r` | Restart overlay          |
-| `y-c` | Check overlay status     |
 
 When the overlay has focus, press `y` then `d` to toggle DevTools (debugging helper).
+
+## Controller Controls
+
+These controls work when the visible overlay has focus.
+
+### Overlay Controller Chords
+
+| Chord | Action                                                      |
+| ----- | ----------------------------------------------------------- |
+| `y-c` | Open the controller picker and save the selected controller |
+| `y-C` | Toggle the raw controller debug HUD                         |
+
+### Controller Actions
+
+| Input                 | Action                                     |
+| --------------------- | ------------------------------------------ |
+| D-pad left/right      | Move token selection in keyboard-only mode |
+| Left stick left/right | Move token selection in keyboard-only mode |
+| `L1` / `R1`           | Previous/next lookup audio source          |
+| `R2`                  | Play current lookup audio                  |
+
+`L1`, `R1`, and `R2` apply while the Yomitan popup is open.
 
 ## Drag-and-Drop
 
