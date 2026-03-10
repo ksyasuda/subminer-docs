@@ -104,6 +104,8 @@ Logged when a malformed JSON line arrives from the mpv socket. Usually harmless 
 
 **"AnkiConnect: unable to connect"**
 
+First confirm you've completed the [Anki Integration prerequisites](/anki-integration#prerequisites) — Anki must be running with the AnkiConnect add-on installed.
+
 SubMiner connects to the active Anki endpoint:
 
 - `ankiConnect.url` (direct mode, default `http://127.0.0.1:8765`)
@@ -111,8 +113,6 @@ SubMiner connects to the active Anki endpoint:
 
 This error means the active endpoint is unavailable, or (in proxy mode) the proxy cannot reach `ankiConnect.proxy.upstreamUrl`.
 
-- Install the [AnkiConnect](https://ankiweb.net/shared/info/2055492159) add-on in Anki.
-- Make sure Anki is running before you start mining.
 - If you changed the AnkiConnect port, update `ankiConnect.url` (or `ankiConnect.proxy.upstreamUrl` if using proxy mode).
 - If using external Yomitan/browser clients, confirm they point to your SubMiner proxy URL.
 
@@ -141,9 +141,9 @@ Shown when SubMiner tries to update a card that no longer exists, or when AnkiCo
 
 **Overlay appears but clicks pass through / cannot interact**
 
-- On Linux, mouse passthrough can be unreliable — this is a known Electron/platform limitation. The overlay keeps pointer events enabled by default on Linux.
-- On macOS/Windows, `setIgnoreMouseEvents` toggles automatically. If clicks stop working, toggle the overlay off and back on (`Alt+Shift+O`).
-- Make sure you are hovering over the subtitle area — the overlay only becomes interactive when the cursor is over subtitle text.
+- Make sure you are hovering over subtitle text — the overlay only becomes interactive when the cursor is over a subtitle.
+- On macOS/Windows: toggle the overlay off and back on (`Alt+Shift+O`) to re-enable pointer events.
+- On Linux: mouse event handling is unreliable in some Electron/compositor combinations. If clicks consistently fail, toggle the overlay off, click the underlying mpv window, then toggle it back on.
 
 **Overlay briefly freezes after a modal/runtime error**
 
@@ -162,6 +162,8 @@ SubMiner positions the overlay by tracking the mpv window. If tracking fails:
 If the overlay position is slightly off, right-click and drag on subtitle text to fine-tune the overlay subtitle offset.
 
 ## Yomitan
+
+If you haven't set up dictionaries yet, see [Yomitan setup](/usage#yomitan-setup) first.
 
 **"Yomitan extension not found in any search path"**
 

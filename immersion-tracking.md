@@ -1,87 +1,56 @@
-# Immersion Tracking Storage
+# Immersion Tracking
 
-SubMiner stores immersion analytics in local SQLite (`immersion.sqlite`) by default.
+SubMiner can log your watching and mining activity to a local SQLite database. This is optional and disabled by default.
 
-Verification notes:
+When enabled, SubMiner records per-session statistics (watch time, subtitle lines seen, words encountered, cards mined) and maintains daily and monthly rollups. You can query the database directly with any SQLite tool to track your progress over time.
 
-- `bun run test:immersion:sqlite` is the reproducible persistence lane; it builds `dist/**` and runs the SQLite-backed immersion tests under Bun.
-- `bun run test:immersion:sqlite:src` is useful for quick source-level visibility under Bun.
-- The dedicated lane covers DB-backed session finalization, telemetry persistence, and storage/session write paths beyond the seam-only reducer/queue tests.
+## Enabling
 
-## Runtime Model
+```jsonc
+{
+  "immersionTracking": {
+    "enabled": true,
+    "dbPath": ""
+  }
+}
+```
 
-- Write path is asynchronous and queue-backed.
-- Hot paths (subtitle parsing/render/token flows) enqueue telemetry/events and never await SQLite writes.
-- Background line processing also upserts to `imm_words` and `imm_kanji`.
-- Queue overflow policy is deterministic: drop oldest queued writes, keep newest.
-- Flush policy defaults to `25` writes or `500ms` max delay.
-- SQLite pragmas: `journal_mode=WAL`, `synchronous=NORMAL`, `foreign_keys=ON`, `busy_timeout=2500`.
-- Rollups now run incrementally from the last processed telemetry sample; startup performs a one-time bootstrap rebuild-equivalent pass.
-- If retention pruning removes telemetry/session rows, maintenance triggers a full rollup rebuild to resync historical aggregates.
+- Leave `dbPath` empty to use the default location (`immersion.sqlite` in SubMiner's app-data directory).
+- Set an explicit path to move the database (useful for backups, cloud syncing, or external tools).
 
-## Schema (v3)
+## Retention Defaults
 
-Schema versioning table:
+Data is kept for the following durations before automatic cleanup:
 
-- `imm_schema_version(schema_version PK, applied_at_ms)`
+| Data type      | Retention |
+| -------------- | --------- |
+| Raw events     | 7 days    |
+| Telemetry      | 30 days   |
+| Daily rollups  | 1 year    |
+| Monthly rollups | 5 years  |
 
-Core entities:
+Maintenance runs on startup and every 24 hours. Vacuum runs weekly.
 
-- `imm_videos`: video key/title/source metadata + optional media metadata fields, `CREATED_DATE`/`LAST_UPDATE_DATE`
-- `imm_sessions`: session UUID, video reference, timing/status fields, `CREATED_DATE`/`LAST_UPDATE_DATE`
-- `imm_session_telemetry`: high-frequency session aggregates over time, `CREATED_DATE`/`LAST_UPDATE_DATE`
-- `imm_session_events`: event stream with compact numeric event types, `CREATED_DATE`/`LAST_UPDATE_DATE`
+## Configurable Knobs
 
-Rollups:
+All policy options live under `immersionTracking` in your config:
 
-- `imm_daily_rollups`: includes `CREATED_DATE`/`LAST_UPDATE_DATE`
-- `imm_monthly_rollups`: includes `CREATED_DATE`/`LAST_UPDATE_DATE`
-
-Vocabulary:
-
-- `imm_words(id, headword, word, reading, first_seen, last_seen, frequency)`
-- `imm_kanji(id, kanji, first_seen, last_seen, frequency)`
-- `first_seen`/`last_seen` store Unix timestamps and are upserted with line ingestion
-
-Primary index coverage:
-
-- session-by-video/time: `idx_sessions_video_started`
-- session-by-status/time: `idx_sessions_status_started`
-- timeline reads: `idx_telemetry_session_sample`
-- event timeline/type reads: `idx_events_session_ts`, `idx_events_type_ts`
-- rollup reads: `idx_rollups_day_video`, `idx_rollups_month_video`
-
-## Retention and Maintenance Defaults
-
-- Raw events: `7d`
-- Telemetry: `30d`
-- Daily rollups: `365d`
-- Monthly rollups: `5y`
-- Maintenance cadence: startup + every `24h`
-- Vacuum cadence: idle weekly (`7d` minimum spacing)
-
-Retention cleanup and rollup refresh stay in service maintenance orchestration + `src/core/services/immersion-tracker/maintenance.ts`.
-
-## Configurable Policy Knobs
-
-All knobs are under `immersionTracking` in config:
-
-- `batchSize`
-- `flushIntervalMs`
-- `queueCap`
-- `payloadCapBytes`
-- `maintenanceIntervalMs`
-- `retention.eventsDays`
-- `retention.telemetryDays`
-- `retention.dailyRollupsDays`
-- `retention.monthlyRollupsDays`
-- `retention.vacuumIntervalDays`
-
-These map directly to runtime tracker policy and allow tuning without code changes.
+| Option | Description |
+| ------ | ----------- |
+| `batchSize` | Writes per flush batch |
+| `flushIntervalMs` | Max delay between flushes (default: 500ms) |
+| `queueCap` | Max queued writes before oldest are dropped |
+| `payloadCapBytes` | Max payload size per write |
+| `maintenanceIntervalMs` | How often maintenance runs |
+| `retention.eventsDays` | Raw event retention |
+| `retention.telemetryDays` | Telemetry retention |
+| `retention.dailyRollupsDays` | Daily rollup retention |
+| `retention.monthlyRollupsDays` | Monthly rollup retention |
+| `retention.vacuumIntervalDays` | Minimum spacing between vacuums |
 
 ## Query Templates
 
-Timeline for one session:
+### Session timeline
 
 ```sql
 SELECT
@@ -98,7 +67,7 @@ ORDER BY sample_ms DESC, telemetry_id DESC
 LIMIT ?;
 ```
 
-Session throughput summary:
+### Session throughput summary
 
 ```sql
 SELECT
@@ -126,7 +95,7 @@ ORDER BY s.started_at_ms DESC
 LIMIT ?;
 ```
 
-Daily rollups:
+### Daily rollups
 
 ```sql
 SELECT
@@ -146,7 +115,7 @@ ORDER BY rollup_day DESC, video_id DESC
 LIMIT ?;
 ```
 
-Monthly rollups:
+### Monthly rollups
 
 ```sql
 SELECT
@@ -162,3 +131,30 @@ FROM imm_monthly_rollups
 ORDER BY rollup_month DESC, video_id DESC
 LIMIT ?;
 ```
+
+## Technical Details
+
+- Write path is asynchronous and queue-backed. Hot paths (subtitle parsing, render, token flows) enqueue telemetry and never await SQLite writes.
+- Queue overflow policy: drop oldest queued writes, keep newest.
+- SQLite pragmas: `journal_mode=WAL`, `synchronous=NORMAL`, `foreign_keys=ON`, `busy_timeout=2500`.
+- Rollups run incrementally from the last processed telemetry sample; startup performs a one-time bootstrap pass.
+- If retention pruning removes telemetry/session rows, maintenance triggers a full rollup rebuild to resync historical aggregates.
+
+### Schema (v3)
+
+Core tables:
+
+- `imm_videos` — video key/title/source metadata
+- `imm_sessions` — session UUID, video reference, timing/status
+- `imm_session_telemetry` — high-frequency session aggregates over time
+- `imm_session_events` — event stream with compact numeric event types
+
+Rollup tables:
+
+- `imm_daily_rollups`
+- `imm_monthly_rollups`
+
+Vocabulary tables:
+
+- `imm_words(id, headword, word, reading, first_seen, last_seen, frequency)`
+- `imm_kanji(id, kanji, first_seen, last_seen, frequency)`

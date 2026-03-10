@@ -54,19 +54,10 @@ Jimaku search, field-grouping, runtime options, and manual subsync open as modal
 
 ## Looking Up Words
 
-### On the Visible Overlay
-
 1. Hover over the subtitle area — the overlay activates pointer events.
-2. Click a word. SubMiner selects it using Unicode-aware word boundary detection (`Intl.Segmenter`).
-3. Yomitan detects the text selection and opens its popup with dictionary results.
-4. From the Yomitan popup, you can add the word directly to Anki.
-
-### On Overlay Subtitles
-
-1. Subtitles are rendered directly in the overlay.
-2. Click on any word in the subtitle.
-3. On macOS, word selection happens automatically on hover.
-4. Yomitan popup appears for lookup and card creation.
+2. Click any word. SubMiner uses Unicode-aware boundary detection (`Intl.Segmenter`) to select it. On macOS, hovering is enough.
+3. Yomitan detects the selection and opens its lookup popup.
+4. From the popup, add the word to Anki.
 
 ## Creating Anki Cards
 
@@ -149,13 +140,7 @@ If you mine the same word from different sentences, SubMiner can merge the cards
    - **Auto mode** (`fieldGrouping: "auto"`): Merges automatically. Both sentences, audio clips, and images are combined into the existing card. The duplicate is optionally deleted.
    - **Manual mode** (`fieldGrouping: "manual"`): A modal appears showing both cards side by side. You choose which card to keep and preview the merged result before confirming.
 
-### What Gets Merged
-
-- **Sentence fields**: Both sentences kept, marked with `[Original]` and `[Duplicate]`.
-- **Audio fields**: Both audio clips preserved as separate `[sound:...]` entries.
-- **Image fields**: Both images preserved.
-
-Configure in `ankiConnect.isKiku`. See [Anki Integration](/anki-integration#field-grouping-kiku) for the full reference.
+See [Anki Integration — Field Grouping](/anki-integration#field-grouping-kiku) for configuration options, merge behavior, and modal keyboard shortcuts.
 
 ## Jimaku Subtitle Search
 
@@ -187,56 +172,23 @@ Install the sync tools separately — see [Troubleshooting](/troubleshooting#sub
 
 ## N+1 Word Highlighting
 
-When enabled, SubMiner highlights words you already know in your Anki deck, making it easier to spot new (N+1) vocabulary during immersion.
+When enabled, SubMiner cross-references your Anki decks to highlight known words in the overlay, making true N+1 sentences (exactly one unknown word) easy to spot during immersion.
 
-### How It Works
+See [Subtitle Annotations — N+1](/subtitle-annotations#n1-word-highlighting) for configuration options and color settings.
 
-1. SubMiner periodically syncs with Anki to build a local cache of known words (expressions/headwords from your configured decks)
-2. As subtitles appear, known words are visually highlighted in the visible overlay
-3. Unknown words remain unhighlighted — these are your potential mining targets
+## Immersion Tracking
 
-### Enabling N+1 Mode
+SubMiner can log your watching and mining activity to a local SQLite database — session times, words seen, cards mined, and daily/monthly rollups.
 
-```json
-{
-  "ankiConnect": {
-    "nPlusOne": {
-      "highlightEnabled": true,
-      "refreshMinutes": 1440,
-      "matchMode": "headword",
-      "minSentenceWords": 3,
-      "decks": ["Learning::Japanese"]
-    }
-  }
+Enable it in your config:
+
+```jsonc
+"immersionTracking": {
+  "enabled": true,
+  "dbPath": ""  // leave empty to use the default location
 }
 ```
 
-| Option             | Description                                                                         |
-| ------------------ | ----------------------------------------------------------------------------------- |
-| `highlightEnabled` | Turn on/off the highlighting feature                                                |
-| `refreshMinutes`   | How often to refresh the known-word cache (default: 1440 = daily)                   |
-| `matchMode`        | `"headword"` (dictionary form) or `"surface"` (exact text match)                    |
-| `minSentenceWords` | Minimum sentence length in tokens required to allow N+1 highlighting (default: `3`) |
-| `decks`            | Which Anki decks to consider "known" (empty = uses `ankiConnect.deck`)              |
+See [Immersion Tracking](/immersion-tracking) for the full schema and retention settings.
 
-### Use Cases
-
-- **Immersion tracking**: Quickly identify which sentences contain only known words vs. those with new vocabulary
-- **Mining focus**: Target sentences with exactly one unknown word (true N+1)
-- **Progress visualization**: See your growing vocabulary visually represented in real content
-
-### Immersion Tracking Storage
-
-Immersion data is persisted to SQLite when enabled in `immersionTracking`:
-
-```json
-{
-  "immersionTracking": {
-    "enabled": true,
-    "dbPath": ""
-  }
-}
-```
-
-- `dbPath` can be empty (default) to use SubMiner’s app-data `immersion.sqlite`.
-- Set an explicit path to move the database (for backups, cloud syncing, or easier inspection).
+Next: [Anki Integration](/anki-integration) — field mapping, media generation, and card enrichment configuration.

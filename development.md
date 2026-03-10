@@ -1,4 +1,4 @@
-# Development
+# Building & Testing
 
 ## Prerequisites
 

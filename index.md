@@ -24,44 +24,65 @@ features:
       src: /assets/mpv.svg
       alt: mpv icon
     title: Built for mpv
-    details: Tracks subtitles through mpv IPC in real time, with a single launch path and no external bridge services.
+    details: Tracks subtitles via mpv IPC in real time. Launch with the wrapper script or the mpv plugin — no external bridge needed.
     link: /usage
     linkText: How it works
   - icon:
       src: /assets/yomitan-icon.svg
       alt: Yomitan logo
-    title: Yomitan Integration
-    details: Keep your flow moving with instant word lookups and context-aware card creation directly from subtitles.
+    title: Bundled Yomitan
+    details: Ships with a built-in Yomitan instance for instant word lookups and context-aware card creation directly from subtitle text.
     link: /mining-workflow
     linkText: Mining workflow
   - icon:
       src: /assets/anki-card.svg
       alt: Anki card icon
     title: Anki Card Enrichment
-    details: Auto-fills card fields with subtitle sentence, clipping, image, and translation so you can focus on learning.
+    details: Auto-fills card fields with sentence, audio clip, screenshot, and translation so you can focus on learning.
     link: /anki-integration
     linkText: Anki integration
   - icon:
       src: /assets/highlight.svg
       alt: Highlight icon
     title: Reading Annotations
-    details: Combines N+1 targeting, character-name matching, frequency highlighting, and JLPT tagging so useful cues stay visible while you read.
+    details: N+1 targeting, character-name matching, frequency highlighting, and JLPT tagging — all layered on subtitle text in real time.
     link: /subtitle-annotations
     linkText: Annotation details
   - icon:
-      src: /assets/tokenization.svg
-      alt: Tokenization icon
-    title: Immersion Tracking
-    details: Captures subtitle and mining telemetry to SQLite, with daily/monthly rollups for progress clarity.
-    link: /immersion-tracking
-    linkText: Tracking details
+      src: /assets/video.svg
+      alt: Video playback icon
+    title: YouTube & Whisper
+    details: Play YouTube URLs or searches with native subtitles, or generate them with whisper.cpp and optional AI cleanup.
+    link: /usage#youtube-playback
+    linkText: YouTube playback
+  - icon:
+      src: /assets/jellyfin.svg
+      alt: Jellyfin icon
+    title: Jellyfin Integration
+    details: Browse your Jellyfin library, pick media interactively, and play through mpv with full subtitle and mining support.
+    link: /jellyfin-integration
+    linkText: Jellyfin setup
   - icon:
       src: /assets/subtitle-download.svg
       alt: Subtitle download icon
     title: Subtitle Download & Sync
-    details: Pull and synchronize subtitles with Jimaku plus alass/ffsubsync in one cohesive workflow.
+    details: Search and pull subtitles from Jimaku, then auto-sync timing with alass or ffsubsync — all from the overlay.
     link: /configuration#jimaku
     linkText: Jimaku integration
+  - icon:
+      src: /assets/tokenization.svg
+      alt: Tracking chart icon
+    title: Immersion Tracking
+    details: Logs watch time, words encountered, and cards mined to SQLite with daily and monthly rollups for long-term progress tracking.
+    link: /immersion-tracking
+    linkText: Tracking details
+  - icon:
+      src: /assets/cross-platform.svg
+      alt: Cross-platform icon
+    title: Cross-Platform
+    details: Runs on Linux (Hyprland, Sway, X11), macOS, and Windows with compositor-aware window positioning and platform-native integration.
+    link: /installation
+    linkText: Platform setup
 ---
 
 <script setup>
@@ -165,6 +186,22 @@ const demoAssetVersion = '20260223-2';
   font-weight: 600;
   letter-spacing: -0.01em;
   margin-bottom: 1rem;
+  padding-bottom: 4px;
+}
+
+.workflow-section h2::after,
+.demo-section h2::after {
+  content: '';
+  display: block;
+  margin-top: 6px;
+  height: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--vp-c-divider) 0,
+    var(--vp-c-divider) 1ch,
+    transparent 1ch,
+    transparent 1.5ch
+  );
 }
 
 .workflow-steps {
@@ -242,12 +279,15 @@ const demoAssetVersion = '20260223-2';
 @media (max-width: 960px) {
   .workflow-steps {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1px;
     background: var(--vp-c-divider);
   }
   .workflow-step {
     min-width: 0;
+  }
+  .workflow-step:last-child {
+    grid-column: 1 / -1;
   }
   .workflow-connector {
     display: none;
@@ -258,12 +298,15 @@ const demoAssetVersion = '20260223-2';
   .workflow-steps {
     grid-template-columns: 1fr;
   }
+  .workflow-step:last-child {
+    grid-column: auto;
+  }
 }
 
 /* === Demo === */
 .demo-section {
   max-width: 960px;
-  margin: 0 auto;
+  margin: 3rem auto 0;
   padding: 0;
 }
 
@@ -312,5 +355,9 @@ const demoAssetVersion = '20260223-2';
 .demo-window video {
   width: 100%;
   display: block;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
 }
 </style>

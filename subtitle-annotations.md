@@ -34,11 +34,11 @@ Set `refreshMinutes` to `1440` (24 hours) for daily sync if your Anki collection
 
 ## Character-Name Highlighting
 
-Character-name matches are built from the active merged SubMiner character dictionary (including AniList sync output when enabled).
+Character-name matches are built from the active merged SubMiner character dictionary, which auto-syncs character data from AniList for your recently-watched titles. Matching names are highlighted in subtitles and become clickable for full character profiles — portraits, roles, voice actors, and biographical detail.
 
 **How it works:**
 
-1. Subtitles are tokenized, then candidate name tokens are matched against the character dictionary.
+1. Subtitles are tokenized, then candidate name tokens are matched against the character dictionary via Yomitan's scanning pipeline.
 2. Matching tokens receive a dedicated style distinct from N+1 and frequency layers.
 3. This layer can be independently toggled with `subtitleStyle.nameMatchEnabled`.
 
@@ -48,6 +48,8 @@ Character-name matches are built from the active merged SubMiner character dicti
 | --- | --- | --- |
 | `subtitleStyle.nameMatchEnabled` | `true` | Enable character-name token highlighting |
 | `subtitleStyle.nameMatchColor` | `#f5bde6` | Color used for character-name matches |
+
+For full details on dictionary generation, name variant expansion, auto-sync lifecycle, and configuration, see the dedicated [Character Dictionary](/character-dictionary) page.
 
 ## Frequency Highlighting
 

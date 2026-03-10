@@ -13,10 +13,13 @@ AnkiConnect listens on `http://127.0.0.1:8765` by default. If you changed the po
 
 ## Auto-Enrichment Transport
 
-SubMiner supports two auto-enrichment transport modes:
+When you add a word via Yomitan, SubMiner detects the new card and fills in the sentence, audio, image, and translation fields automatically. Two detection methods are available:
 
-1. `proxy` (default): runs a local AnkiConnect-compatible proxy and enriches cards immediately after successful `addNote` / `addNotes` / `multi` responses.
-2. `polling`: polls AnkiConnect at `ankiConnect.pollingRate` (default: 3s).
+**Proxy mode** — SubMiner runs a local AnkiConnect-compatible proxy and intercepts card creation instantly. Recommended when possible.
+
+**Polling mode** (default) — SubMiner polls AnkiConnect every few seconds for newly added cards. Simpler setup, but with a short delay (~3 seconds).
+
+Use proxy mode if you want immediate enrichment. Use polling mode if your Yomitan instance is external (browser-based) or you prefer minimal configuration.
 
 In both modes, the enrichment workflow is the same:
 

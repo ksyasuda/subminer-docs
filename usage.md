@@ -14,16 +14,14 @@
 6. Hovering or clicking a word triggers Yomitan popup for dictionary lookup
 7. Optional [subtitle annotations](/subtitle-annotations) (N+1, character-name, frequency, JLPT) highlight useful cues in real time
 
-There are two ways to use SubMiner — the `subminer` wrapper script or the mpv plugin:
+There are two ways to use SubMiner:
 
-| Approach            | Best For                                                                                                                                                                                                                 |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **subminer script** | All-in-one solution. Handles video selection, launches MPV with the correct socket, and manages app commands. With default plugin settings, overlay auto-starts visible and playback resumes after annotation readiness. |
-| **MPV plugin**      | When you launch MPV yourself or from other tools. Provides in-MPV chord keybindings (e.g. `y-y` for menu) to control overlay visibility. Requires `--input-ipc-server=/tmp/subminer-socket`.                             |
+| Approach | Use when | How |
+| -------- | -------- | --- |
+| **`subminer` script** | You want SubMiner to handle everything — launch mpv, set up the socket, start the overlay. The simplest path. | `subminer video.mkv` |
+| **MPV plugin** | You launch mpv yourself or from another tool (file manager, Jellyfin, etc.). Requires `--input-ipc-server=/tmp/subminer-socket` in your mpv config. | Use `y` chord keybindings inside mpv |
 
-You can use both together—install the plugin for on-demand control, but use `subminer` when you want the streamlined workflow.
-
-`subminer` is implemented as a Bun script and runs directly via shebang (no `bun run` needed), for example: `subminer video.mkv`.
+You can use both — the plugin provides in-player controls, while the `subminer` script is convenient for direct playback. The `subminer` script runs directly via shebang (no `bun run` needed).
 
 ## Live Config Reload
 
@@ -212,7 +210,9 @@ secondary-sid=auto
 secondary-sub-visibility=no
 ```
 
-`secondary-slang` is not an mpv option; use `slang` with `sid=auto` / `secondary-sid=auto` instead.
+::: warning
+`secondary-slang` is not a valid mpv option. Use `slang` with `sid=auto` / `secondary-sid=auto` to set subtitle language preferences.
+:::
 
 ### Yomitan setup
 
@@ -248,50 +248,24 @@ Notes:
 
 ## Keybindings
 
-### Global Shortcuts
+See [Keyboard Shortcuts](/shortcuts) for the full reference, including mining shortcuts, overlay controls, and customization.
+
+**Global shortcuts** (work system-wide):
 
 | Keybind       | Action                 |
 | ------------- | ---------------------- |
 | `Alt+Shift+O` | Toggle visible overlay |
 | `Alt+Shift+Y` | Open Yomitan settings  |
 
-`Alt+Shift+Y` is a fixed global shortcut; it is not part of `shortcuts` config.
+::: tip
+`Alt+Shift+Y` is fixed and not configurable. All other shortcuts can be changed under `shortcuts` in your config.
+:::
 
-### Overlay Controls (Configurable)
+Hovering over subtitle text pauses mpv by default; leaving resumes it. Disable with `subtitleStyle.autoPauseVideoOnHover: false`. To also pause while the Yomitan popup is open, set `subtitleStyle.autoPauseVideoOnYomitanPopup: true`.
 
-| Input                | Action                                             |
-| -------------------- | -------------------------------------------------- |
-| `Space`              | Toggle MPV pause                                   |
-| `ArrowRight`         | Seek forward 5 seconds                             |
-| `ArrowLeft`          | Seek backward 5 seconds                            |
-| `ArrowUp`            | Seek forward 60 seconds                            |
-| `ArrowDown`          | Seek backward 60 seconds                           |
-| `Shift+H`            | Jump to previous subtitle                          |
-| `Shift+L`            | Jump to next subtitle                              |
-| `Ctrl+Shift+H`       | Replay current subtitle (play to end, then pause)  |
-| `Ctrl+Shift+L`       | Play next subtitle (jump, play to end, then pause) |
-| `Q`                  | Quit mpv                                           |
-| `Ctrl+W`             | Quit mpv                                           |
-| `Right-click`        | Toggle MPV pause (outside subtitle area)           |
-| `Right-click + drag` | Move subtitle position (on subtitle)               |
-| `Ctrl/Cmd+A`         | Append clipboard video path to MPV playlist        |
+### Drag-and-Drop
 
-These keybindings only work when the overlay window has focus. See [Configuration](/configuration) for customization.
+- Drop video files onto the overlay to replace current playback.
+- Hold `Shift` while dropping to append to the playlist instead.
 
-By default, hovering over subtitle text pauses mpv playback and leaving the subtitle area resumes playback. Set `subtitleStyle.autoPauseVideoOnHover` to `false` to disable this behavior.
-If you want playback to pause while the Yomitan popup is open, set `subtitleStyle.autoPauseVideoOnYomitanPopup` to `true`.
-
-### Drag-and-drop Queueing
-
-- Drag and drop one or more video files onto the overlay to replace current playback (`loadfile ... replace` for first file, then append remainder).
-- Hold `Shift` while dropping to append all dropped files to the current MPV playlist.
-
-## How It Works
-
-1. MPV runs with an IPC socket at `/tmp/subminer-socket`
-2. The overlay connects and subscribes to subtitle changes
-3. Subtitles are tokenized with Yomitan's internal parser
-4. Words are displayed as clickable spans
-5. Known words, N+1 targets, JLPT/frequency hits, and character-name matches can be color-coded in the overlay
-6. Clicking a word triggers Yomitan popup for dictionary lookup
-7. Texthooker server runs at `http://127.0.0.1:5174` for external tools
+Next: [Mining Workflow](/mining-workflow) — word lookup, card creation, and the full mining loop.
