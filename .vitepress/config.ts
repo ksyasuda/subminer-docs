@@ -63,10 +63,9 @@ export default {
         items: [
           { text: 'Overview', link: '/' },
           { text: 'Installation', link: '/installation' },
-          { text: 'Launcher Script', link: '/launcher-script' },
           { text: 'Usage', link: '/usage' },
           { text: 'Mining Workflow', link: '/mining-workflow' },
-          // { text: 'Feature Demos', link: '/demos' },
+          { text: 'Launcher Script', link: '/launcher-script' },
         ],
       },
       {
@@ -76,17 +75,18 @@ export default {
           { text: 'Keyboard Shortcuts', link: '/shortcuts' },
           { text: 'Subtitle Annotations', link: '/subtitle-annotations' },
           { text: 'Immersion Tracking', link: '/immersion-tracking' },
-          { text: 'MPV Plugin', link: '/mpv-plugin' },
           { text: 'Troubleshooting', link: '/troubleshooting' },
         ],
       },
       {
         text: 'Integrations',
         items: [
+          { text: 'MPV Plugin', link: '/mpv-plugin' },
           { text: 'Anki', link: '/anki-integration' },
           { text: 'Jellyfin', link: '/jellyfin-integration' },
           { text: 'Jimaku', link: '/configuration#jimaku' },
           { text: 'AniList', link: '/configuration#anilist' },
+          { text: 'Character Dictionary', link: '/character-dictionary' },
         ],
       },
       {

@@ -99,6 +99,16 @@ button,
   opacity: 0.4;
 }
 
+.VPSidebar .VPSidebarItem.is-link:not(.is-active) > .item:hover .text::before {
+  content: '> ';
+  color: var(--vp-c-text-3);
+  opacity: 0.6;
+}
+
+.VPSidebar .VPSidebarItem.is-link:not(.is-active) > .item:hover .text {
+  color: var(--vp-c-text-1) !important;
+}
+
 .VPSidebar .VPSidebarItem.level-0 > .item .text {
   font-weight: 700;
   font-size: 12px;
@@ -271,6 +281,73 @@ button,
   font-weight: 600;
 }
 
+/* === Blockquotes === */
+.vp-doc blockquote {
+  border-left: 2px solid var(--vp-c-divider);
+  padding: 4px 0 4px 16px;
+  margin: 16px 0;
+  color: var(--vp-c-text-2);
+  font-style: normal;
+  position: relative;
+}
+
+.vp-doc blockquote::before {
+  content: '│';
+  position: absolute;
+  left: -2px;
+  top: 4px;
+  color: var(--vp-c-brand-1);
+  font-family: var(--tui-font-mono);
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0;
+}
+
+/* === Horizontal rules === */
+.vp-doc hr {
+  border: none;
+  height: 1px;
+  margin: 24px 0;
+  background: repeating-linear-gradient(
+    to right,
+    var(--vp-c-divider) 0,
+    var(--vp-c-divider) 1ch,
+    transparent 1ch,
+    transparent 1.5ch
+  );
+}
+
+/* === Lists === */
+.vp-doc ul > li::marker {
+  color: var(--vp-c-text-3);
+}
+
+.vp-doc ol > li::marker {
+  font-family: var(--tui-font-mono);
+  font-size: 0.85em;
+  color: var(--vp-c-text-3);
+}
+
+/* === Focus-visible === */
+:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+
+.vp-doc a:focus-visible {
+  outline-offset: 3px;
+  border-bottom-color: transparent;
+}
+
+/* === Feature icon hover === */
+.VPFeatures .VPFeature .icon {
+  transition: transform 280ms ease;
+}
+
+.VPFeatures .VPFeature:hover .icon {
+  transform: translateY(-2px);
+}
+
 /* === Blinking cursor === */
 .tui-cursor {
   display: inline-block;
@@ -373,6 +450,10 @@ body {
 @media (max-width: 640px) {
   .tui-statusline__section,
   .tui-statusline__date {
+    display: none;
+  }
+
+  .VPHome .VPHero::before {
     display: none;
   }
 }
@@ -528,6 +609,7 @@ body {
 /* === Hero glow === */
 .VPHome .VPHero {
   position: relative;
+  overflow: hidden;
 }
 
 .VPHome .VPHero::before {
