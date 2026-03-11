@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.5.6 (2026-03-10)
+- Persisted merged character-dictionary MRU state as soon as a new retained set is built so revisits do not get dropped if later Yomitan import work fails.
+- Fixed early Electron startup writing config and user data under a lowercase `~/.config/subminer` path instead of canonical `~/.config/SubMiner`.
+- Kept JLPT underline colors stable during Yomitan hover and selection states, even when tokens also use known, N+1, name-match, or frequency styling.
+
 ## v0.5.1 (2026-03-09)
 - Removed the old YouTube subtitle-generation mode switch; YouTube playback now resolves subtitles before mpv starts.
 - Hardened YouTube AI subtitle fixing so fenced/text-only responses keep original cue timing.
